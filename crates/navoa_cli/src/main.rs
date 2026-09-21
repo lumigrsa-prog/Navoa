@@ -7,6 +7,7 @@ use navoa_vm::VM;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    
     // Se for passado um ficheiro como argumento (ex: cargo run -p navoa_cli script.nav)
     if args.len() > 1 {
         let filename = &args[1];
@@ -135,7 +136,7 @@ fn main() {
     }
 }
 
-// Sistema de tradução automática entre as 6 línguas para o padrão português
+// Sistema de tradução automática entre as línguas para o padrão português
 fn traduzir_para_padrao(codigo: &str) -> String {
     let substituicoes = vec![
         ("print", "imprimir"), ("var", "variavel"), ("if", "se"),
@@ -196,18 +197,15 @@ fn is_identifier_char(c: u8) -> bool {
 fn execute_code(code: &str, vm: &mut VM) {
     let mut lexer = Lexer::new(code);
     
-    match lexer.tokenize() {
+    // Utiliza o método .lex() (ou ajusta para o nome exato do método de varredura do teu lexer se diferir)
+    match lexer.lex() {
         Ok(tokens) => {
-            // O uso de .as_slice() obriga o Rust a reconhecer que 'tokens' é um Vec
-            // Isso destrói o erro E0277 de inferência
             let mut parser = Parser::new(tokens.as_slice());
             match parser.parse() {
                 Ok(ast) => {
                     let mut codegen = CodeGen::new();
-                    // O mesmo princípio aplica-se à AST
                     match codegen.compile(ast.as_slice()) {
                         Ok(_) => {
-                            // A VM consome o vetor nativamente
                             if let Err(e) = vm.interpret(ast) {
                                 eprintln!("❌ Runtime Error: {}", e);
                             }
