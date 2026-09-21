@@ -1,0 +1,8 @@
+var nome = input("Name: ");
+print("Hello " + nome);
+if nome == "chefe" {
+    print("Welcome back!");
+} else {
+    print("Access denied.");
+}
+

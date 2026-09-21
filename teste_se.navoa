@@ -1,0 +1,6 @@
+definir idade = 18;
+se idade >= 18 {
+    imprimir "Maior de idade";
+} senao {
+    imprimir "Menor de idade";
+}

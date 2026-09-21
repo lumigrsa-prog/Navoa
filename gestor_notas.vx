@@ -1,0 +1,13 @@
+// Gestor Avançado de Tarefas Diárias em Vortex
+imprimir "A inicializar o gestor de notas...";
+
+// Abrir base de dados integrada
+seja db = db_open("notas_diarias.db");
+
+// Criar tabela estruturada
+db_query(db, "CREATE TABLE IF NOT EXISTS notas (id INTEGER PRIMARY KEY AUTOINCREMENT, tarefa TEXT, categoria TEXT, estado TEXT);");
+
+// Registar uma nova tarefa prática
+db_query(db, "INSERT INTO notas (tarefa, categoria, estado) VALUES ('Validar novos modulos do pré-processador', 'Desenvolvimento', 'Pendente');");
+
+imprimir "Tarefa inserida com sucesso na base de dados SQLite!";

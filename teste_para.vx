@@ -1,0 +1,14 @@
+// Teste do ciclo para e funções embutidas
+
+imprimir "--- Contagem com ciclo para ---";
+para seja i = 0; i < 4; i = i + 1 {
+    imprimir i;
+}
+
+imprimir "--- Testando funções tipo() e numero() ---";
+seja texto_num = "42.5";
+imprimir tipo(texto_num);
+
+seja num_convertido = numero(texto_num) + 7.5;
+imprimir num_convertido;
+imprimir tipo(num_convertido);

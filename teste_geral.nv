@@ -1,0 +1,15 @@
+funcao saudar(nome) {
+    retorna "Olá, " + nome + "!"
+}
+
+imprimir("Como te chamas?")
+seja meu_nome = ler()
+imprimir(saudar(meu_nome))
+
+imprimir("A fazer contagem decrescente:")
+seja i = 3
+enquanto i > 0 {
+    imprimir(i)
+    i = i - 1
+}
+imprimir("Fim!")

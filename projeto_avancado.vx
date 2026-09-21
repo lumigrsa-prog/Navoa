@@ -1,0 +1,32 @@
+// Projeto Avançado: Lógica Funcional & SQLite no Vortex
+
+// Função recursiva pura para calcular o fatorial
+funcao fatorial(n) {
+    se n <= 1 {
+        retornar 1;
+    } senao {
+        retornar n * fatorial(n - 1);
+    }
+}
+
+// Cálculo funcional de um acumulador recursivo
+funcao somar_elementos(arr, idx) {
+    se idx < 0 {
+        retornar 0;
+    } senao {
+        retornar arr[idx] + somar_elementos(arr, idx - 1);
+    }
+}
+
+seja valores = [fatorial(4), fatorial(5), 10];
+seja total = somar_elementos(valores, 2);
+
+// Persistência e consulta avançada em SQLite nativo
+seja db = db_open("sistema.db");
+
+// Teste condicional baseado nos resultados calculados
+se total > 100 {
+    escrever_ficheiro("status.txt", total);
+} senao {
+    escrever_ficheiro("status.txt", 0);
+}

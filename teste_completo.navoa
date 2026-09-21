@@ -1,0 +1,5 @@
+definir nome = "Vicente";
+definir contador = 1;
+definir limite = 3;
+imprimir "--- Teste do Navoa ---";
+imprimir nome;

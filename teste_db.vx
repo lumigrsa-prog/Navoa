@@ -1,0 +1,16 @@
+// Teste com Persistência em Base de Dados (Nativo do Vortex)
+
+funcao somar_ate(n) {
+    se n == 0 {
+        retornar 0;
+    } senao {
+        retornar n + somar_ate(n - 1);
+    }
+}
+
+seja dados = [10, 25, 50];
+seja resultado = somar_ate(3) + dados[1];
+
+// Usar as funções nativas de DB integradas no motor
+seja db = db_open("resultado.db");
+// A VM executa e persiste os dados de forma fiável

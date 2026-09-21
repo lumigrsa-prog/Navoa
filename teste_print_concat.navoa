@@ -1,0 +1,3 @@
+definir nome = "Vicente";
+definir idade = 40;
+imprimir "Nome: " + nome;

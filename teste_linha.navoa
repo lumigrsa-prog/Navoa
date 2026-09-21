@@ -1,0 +1,1 @@
+definir a = 5; definir b = 10; imprimir a + b;

@@ -1,0 +1,5 @@
+pub struct DiagnosticError {
+    pub message: String,
+    pub span: Span,
+    pub hint: Option<String>,
+}

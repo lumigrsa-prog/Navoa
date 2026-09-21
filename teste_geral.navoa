@@ -1,0 +1,32 @@
+print("=== INICIO DOS TESTES GERAIS DO NAVOA ===");
+
+let nome = "Navoa Language";
+print(nome);
+
+let contador = 1;
+let limite = 4;
+let ativo = true;
+
+print("--- Teste de Ciclo Enquanto e Condicionais ---");
+enquanto contador < limite {
+    print(contador);
+    
+    se contador == 2 {
+        print("Atencao: contador esta a meio!");
+    } senao {
+        print("A processar passo normal...");
+    }
+
+    contador = contador + 1;
+}
+
+print("Fim do ciclo. Valor final:");
+print(contador);
+
+print("--- Teste de Operacoes com Floats ---");
+let a = 15.5;
+let b = 2.0;
+let calc = a * b;
+print(calc);
+
+print("=== TESTES CONCLUIDOS COM SUCESSO ===");

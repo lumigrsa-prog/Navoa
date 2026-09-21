@@ -1,0 +1,4 @@
+definir a = true;
+definir b = false;
+imprimir a && b;
+imprimir !b;

@@ -1,0 +1,4 @@
+definir texto1 = "Navoa ";
+definir texto2 = "Language";
+definir resultado = texto1 + texto2;
+imprimir resultado;

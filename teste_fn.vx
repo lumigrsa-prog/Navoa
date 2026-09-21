@@ -1,0 +1,5 @@
+fn cumprimentar(nome) {
+    print("Olá, " + nome + "!")
+}
+
+cumprimentar("Lisboa Noir")

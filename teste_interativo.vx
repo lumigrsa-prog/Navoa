@@ -1,0 +1,16 @@
+// Teste de interatividade e mapas
+
+imprimir "Qual é o teu nome?";
+seja nome = leia();
+
+imprimir "Olá, " + nome + "! Vamos criar uma ficha de dados:";
+
+seja ficha = {
+    "utilizador": nome,
+    "versao": 1.0,
+    "ativo": verdadeiro
+};
+
+imprimir ficha;
+imprimir "Nome na ficha:";
+imprimir ficha["utilizador"];

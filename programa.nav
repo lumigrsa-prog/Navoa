@@ -1,0 +1,9 @@
+funcao dobrar(lista) {
+    retorna lista[0] * 2;
+}
+
+let numeros = [5, 10, 15];
+let res = dobrar(numeros);
+
+escreve "O dobro do primeiro elemento é:";
+escreve res;

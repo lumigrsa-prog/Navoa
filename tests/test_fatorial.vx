@@ -1,0 +1,8 @@
+// Teste de operações aritméticas e variáveis múltiplas
+seja a = 10;
+seja b = 15;
+seja resultado = a * b - 125; // 150 - 125 = 25
+
+seja db = db_open("test_res.db");
+db_query(db, "CREATE TABLE IF NOT EXISTS resultado (val INTEGER);");
+db_query(db, "INSERT INTO resultado VALUES (25);");

@@ -1,0 +1,9 @@
+[package]
+name = "navoa_vvm"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+navoa_vir = { path = "../navoa_vir" }
+navoa_bytecode = { path = "../navoa_bytecode" }

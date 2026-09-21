@@ -1,0 +1,2336 @@
+=== ESTRUTURA DO PROJETO ===
+.
+./Cargo.lock
+./Cargo.toml
+./README.md
+./Span
+./__pycache__
+./__pycache__/preprocessor.cpython-313.pyc
+./__pycache__/run_all.cpython-313.pyc
+./__pycache__/vortex.cpython-313.pyc
+./crates
+./crates/navoa_analyzer
+./crates/navoa_analyzer/Cargo.toml
+./crates/navoa_analyzer/src
+./crates/navoa_bytecode
+./crates/navoa_bytecode/Cargo.toml
+./crates/navoa_bytecode/src
+./crates/navoa_cli
+./crates/navoa_cli/Cargo.toml
+./crates/navoa_cli/src
+./crates/navoa_cli/tests
+./crates/navoa_cli/Cargo.toml,
+./crates/navoa_cli/Cargo.toml:
+./crates/navoa_codegen
+./crates/navoa_codegen/Cargo.toml
+./crates/navoa_codegen/src
+./crates/navoa_lexer
+./crates/navoa_lexer/Cargo.toml
+./crates/navoa_lexer/src
+./crates/navoa_parser
+./crates/navoa_parser/Cargo.toml
+./crates/navoa_parser/src
+./crates/navoa_vir
+./crates/navoa_vir/Cargo.toml
+./crates/navoa_vir/src
+./crates/navoa_vm
+./crates/navoa_vm/Cargo.toml
+./crates/navoa_vm/src
+./crates/vortex_vvm
+./crates/vortex_vvm/Cargo.toml
+./crates/vortex_vvm/src
+./europa.nav
+./exemplo.nav
+./experiencia.vx
+./expressao.vxc
+./gestor_notas.vx
+./integration_test.rs
+./locales
+./locales/en.json
+./locales/pt.json
+./meu_programa.vx
+./multilingue.nav
+./navoa.py
+./navoa_analyzer
+./navoa_vir
+./navoa_vm
+./notas_diarias.db
+./pipeline.vxc
+./poliglota.nav
+./preprocessor.py
+./procurar_parser.py
+./procurar_vm.py
+./procurar_vrt.py
+./programa.nav
+./programa.nv
+./programa.vx
+./projeto_avancado.vx
+./run.sh
+./run_all.py
+./run_test.py
+./src
+./src/main.rs
+./temp_exec.nv
+./test_runner.py
+./teste.nav
+./teste.nv
+./teste.vrt
+./teste_arrays.vx
+./teste_avancado.vx
+./teste_cli.vx
+./teste_dados.nv
+./teste_db.vx
+./teste_disco.vx
+./teste_file.vx
+./teste_fn.vx
+./teste_geral.nv
+./teste_interativo.vx
+./teste_iter.vx
+./teste_logico.vx
+./teste_mutacao.vx
+./teste_negacao.vx
+./teste_para.vx
+./teste_se.nv
+./teste_valido.vx
+./tests
+./tests/test_condicional.exp
+./tests/test_condicional.vx
+./tests/test_fatorial.exp
+./tests/test_fatorial.vx
+./teste.navoa
+./{
+./teste_soma.navoa
+./investigação.nav
+./teste_completo.navoa
+./teste_se.navoa
+./teste_enquanto.navoa
+./teste_en.navoa
+./teste_concat.navoa
+./teste_math.navoa
+./teste_bool.navoa
+./teste_div.navoa
+./teste_linha.navoa
+./teste_logico.navoa
+./teste_not.navoa
+./teste_igual.navoa
+./teste_simbolos.navoa
+./teste_comparacao.navoa
+./teste_mult_args.navoa
+./teste_print_concat.navoa
+./teste_and_or.navoa
+./teste_str_eq.navoa
+./teste_parens.navoa
+./teste_num_str.navoa
+./teste_excl.navoa
+./teste_cast.navoa
+./exemplo.navoa
+./teste_se_ok.navoa
+./teste_enquanto_ok.navoa
+./teste_geral.navoa
+./main.rs
+./limite.navoa
+./projeto_navoa.txt
+
+
+=== CARGO.TOML (RAIZ) ===
+[workspace]
+resolver = "2"
+members = [
+    "crates/navoa_lexer",
+    "crates/navoa_parser",
+    "crates/navoa_codegen",
+    "crates/navoa_vm",
+    "crates/navoa_cli"
+]
+
+
+
+=== FICHEIROS CARGO.TOML DAS CRATES ===
+-e 
+--- FICHEIRO: crates/navoa_analyzer/Cargo.toml ---
+[package]
+name = "navoa_analyzer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_vir = { path = "../navoa_vir" }
+-e 
+--- FICHEIRO: crates/navoa_bytecode/Cargo.toml ---
+[package]
+name = "navoa_bytecode"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rusqlite = { version = "0.31", features = ["bundled"] }
+-e 
+--- FICHEIRO: crates/navoa_cli/Cargo.toml ---
+[package]
+name = "navoa_cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_lexer = { path = "../navoa_lexer" }
+navoa_parser = { path = "../navoa_parser" }
+navoa_analyzer = { path = "../navoa_analyzer" }
+navoa_vir = { path = "../navoa_vir" }
+navoa_bytecode = { path = "../navoa_bytecode" }
+navoa_codegen = { path = "../navoa_codegen" }
+navoa_vm = { path = "../navoa_vm" }
+clap = { version = "4.0", features = ["derive"] }
+ctrlc = { version = "3.2" }
+
+[dev-dependencies]
+navoa_bytecode = { path = "../navoa_bytecode" }
+navoa_codegen = { path = "../navoa_codegen" }
+-e 
+--- FICHEIRO: crates/navoa_codegen/Cargo.toml ---
+[package]
+name = "navoa_codegen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_vir = { path = "../navoa_vir" }
+navoa_bytecode = { path = "../navoa_bytecode" }
+-e 
+--- FICHEIRO: crates/navoa_lexer/Cargo.toml ---
+[package]
+name = "navoa_lexer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+-e 
+--- FICHEIRO: crates/navoa_parser/Cargo.toml ---
+[package]
+name = "navoa_parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_lexer = { path = "../navoa_lexer" }
+navoa_vir = { path = "../navoa_vir" }
+-e 
+--- FICHEIRO: crates/navoa_vir/Cargo.toml ---
+[package]
+name = "navoa_vir"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+-e 
+--- FICHEIRO: crates/navoa_vm/Cargo.toml ---
+[package]
+name = "navoa_vm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_codegen = { path = "../navoa_codegen" }
+-e 
+--- FICHEIRO: crates/vortex_vvm/Cargo.toml ---
+[package]
+name = "navoa_vvm"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+navoa_vir = { path = "../navoa_vir" }
+navoa_bytecode = { path = "../navoa_bytecode" }
+
+
+=== CÓDIGO-FONTE RUST (.RS) ===
+
+--- FICHEIRO: crates/navoa_analyzer/src/lib.rs ---
+use navoa_vir::VirStatement;
+
+pub struct Analyzer;
+
+impl Analyzer {
+    pub fn new() -> Self {
+        Self
+    }
+
+    pub fn analyze<I: AsRef<[VirStatement]>>(&mut self, statements: I) -> Result<Vec<VirStatement>, String> {
+        Ok(statements.as_ref().to_vec())
+    }
+}
+
+--- FICHEIRO: crates/navoa_bytecode/src/lib.rs ---
+#[derive(Debug, Clone, PartialEq)]
+pub enum BinaryOp {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Equal,
+    NotEqual,
+    LessThan,
+    LessEqual,
+    GreaterThan,
+    GreaterEqual,
+    And,
+    Or,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Instruction {
+    PushInt(i64),
+    PushFloat(f64),
+    PushString(String),
+    PushBool(bool),
+    LoadVar(String),
+    StoreVar(String),
+    Binary(BinaryOp),
+    Print,
+    Jump(usize),
+    JumpIfFalse(usize),
+    Call(String, usize),
+    Return,
+    Pop,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct BytecodeProgram {
+    pub instructions: Vec<Instruction>,
+}
+
+--- FICHEIRO: crates/navoa_cli/src/main.rs ---
+use clap::Parser;
+use std::fs;
+use std::io::{self, Write};
+use std::path::PathBuf;
+
+use navoa_parser::Parser as NavoaParser;
+use navoa_analyzer::Analyzer;
+use navoa_codegen::CodeGen;
+use navoa_vm::VM;
+
+#[derive(Parser, Debug)]
+#[command(name = "navoa")]
+#[command(author = "Aurelian Noctis", version = "0.1.0", about = "Interpretador e VM da linguagem Navoa")]
+struct Args {
+    /// Ficheiro .navoa para executar. Se omitido, inicia o REPL interativo.
+    file: Option<PathBuf>,
+}
+
+fn run_code(source: &str, vm: &mut VM) -> Result<(), String> {
+    // 1 & 2. Análise Sintática (Lexer embutido + Lowering para VIR)
+    let mut parser = NavoaParser::new(source)?;
+    let vir_statements = parser.parse_program().map_err(|e| format!("Erro Sintático: {:?}", e))?;
+
+    // 3. Análise Semântica (VIR)
+    let mut analyzer = Analyzer::new();
+    let analyzed_vir = analyzer.analyze(&vir_statements).map_err(|e| format!("Erro no Analyzer: {:?}", e))?;
+
+    // 4. Geração de Código (BytecodeProgram)
+    let mut codegen = CodeGen::new();
+    let program = codegen.generate(&analyzed_vir).map_err(|e| format!("Erro no Codegen: {:?}", e))?;
+
+    // 5. Execução na Máquina Virtual
+    vm.run(&program).map_err(|e| format!("Erro de Execução (VM): {}", e))?;
+
+    Ok(())
+}
+
+fn main() {
+    let args = Args::parse();
+    let mut vm = VM::new();
+
+    if let Some(path) = args.file {
+        match fs::read_to_string(&path) {
+            Ok(code) => {
+                println!("=== Executando: {:?} ===", path);
+                if let Err(err) = run_code(&code, &mut vm) {
+                    eprintln!("{}", err);
+                }
+            }
+            Err(err) => {
+                eprintln!("Erro ao ler o ficheiro '{}': {}", path.display(), err);
+            }
+        }
+    } else {
+        println!("Navoa REPL v0.1.0");
+        println!("Escreve 'exit' ou prime Ctrl+C para sair.\n");
+
+        let mut input = String::new();
+
+        loop {
+            print!("navoa> ");
+            io::stdout().flush().unwrap();
+
+            input.clear();
+
+            if io::stdin().read_line(&mut input).is_err() || input.trim() == "exit" {
+                println!("\nA sair do Navoa REPL.");
+                break;
+            }
+
+            let trimmed = input.trim();
+            if !trimmed.is_empty() {
+                if let Err(err) = run_code(trimmed, &mut vm) {
+                    eprintln!("{}", err);
+                }
+            }
+        }
+    }
+}
+
+--- FICHEIRO: crates/navoa_cli/tests/integration_test.rs ---
+use navoa_codegen::BytecodeProgram;
+use navoa_vm::VM;
+
+#[test]
+fn test_vm_basic_execution() {
+    // BytecodeProgram recebe diretamente a lista de instruções geradas pelo codegen
+    let program = BytecodeProgram {
+        instructions: vec![],
+    };
+
+    let mut vm = VM::new();
+    let result = vm.run(&program);
+    assert!(result.is_ok());
+}
+
+--- FICHEIRO: crates/navoa_cli/tests/stress_test.rs ---
+use navoa_bytecode::{Chunk, Opcode, Value};
+use navoa_codegen::BytecodeProgram;
+use navoa_vm::VM;
+
+#[test]
+fn test_vm_stress_execution() {
+    let mut chunk = Chunk::new();
+    
+    // Empilhar e somar 1000 valores sequenciais
+    for i in 0..1000 {
+        let idx = chunk.add_constant(Value::Float(i as f64));
+        chunk.write_op(Opcode::Constant(idx), 1);
+        if i > 0 {
+            // Operação de adição na pilha
+            chunk.write_op(Opcode::Add, 1);
+        }
+    }
+    chunk.write_op(Opcode::Return, 1);
+
+    let program = BytecodeProgram {
+        instructions: vec![],
+    };
+
+    let mut vm = VM::new();
+    let result = vm.run(&program);
+    assert!(result.is_ok());
+}
+
+--- FICHEIRO: crates/navoa_codegen/src/lib.rs ---
+use navoa_bytecode::{BinaryOp, BytecodeProgram, Instruction};
+use navoa_vir::{VirExpr, VirOp, VirStatement};
+
+pub struct CodeGen {
+    instructions: Vec<Instruction>,
+}
+
+impl CodeGen {
+    pub fn new() -> Self {
+        CodeGen {
+            instructions: Vec::new(),
+        }
+    }
+
+    pub fn generate(&mut self, statements: &[VirStatement]) -> Result<BytecodeProgram, String> {
+        for stmt in statements {
+            self.compile_statement(stmt)?;
+        }
+        Ok(BytecodeProgram {
+            instructions: self.instructions.clone(),
+        })
+    }
+
+    fn compile_statement(&mut self, stmt: &VirStatement) -> Result<(), String> {
+        match stmt {
+            VirStatement::VarDecl { name, initializer } => {
+                self.compile_expression(initializer)?;
+                self.instructions.push(Instruction::StoreVar(name.clone()));
+            }
+            VirStatement::Assign { name, value } => {
+                self.compile_expression(value)?;
+                self.instructions.push(Instruction::StoreVar(name.clone()));
+            }
+            VirStatement::Print(expr) => {
+                self.compile_expression(expr)?;
+                self.instructions.push(Instruction::Print);
+            }
+            VirStatement::If {
+                condition,
+                then_branch,
+                else_branch,
+            } => {
+                self.compile_expression(condition)?;
+                let jump_if_false_idx = self.emit_dummy_jump_if_false();
+
+                for s in then_branch {
+                    self.compile_statement(s)?;
+                }
+
+                if let Some(else_stmts) = else_branch {
+                    let jump_idx = self.emit_dummy_jump();
+                    let else_start_target = self.instructions.len();
+                    self.patch_jump_target(jump_if_false_idx, else_start_target);
+
+                    for s in else_stmts {
+                        self.compile_statement(s)?;
+                    }
+                    let else_end_target = self.instructions.len();
+                    self.patch_jump_target(jump_idx, else_end_target);
+                } else {
+                    let target = self.instructions.len();
+                    self.patch_jump_target(jump_if_false_idx, target);
+                }
+            }
+            VirStatement::While { condition, body } => {
+                let loop_start = self.instructions.len();
+                self.compile_expression(condition)?;
+                let jump_if_false_idx = self.emit_dummy_jump_if_false();
+
+                for s in body {
+                    self.compile_statement(s)?;
+                }
+
+                self.instructions.push(Instruction::Jump(loop_start));
+                let loop_end = self.instructions.len();
+                self.patch_jump_target(jump_if_false_idx, loop_end);
+            }
+            VirStatement::Return(opt_expr) => {
+                if let Some(expr) = opt_expr {
+                    self.compile_expression(expr)?;
+                }
+                self.instructions.push(Instruction::Return);
+            }
+            VirStatement::Expr(expr) => {
+                self.compile_expression(expr)?;
+                self.instructions.push(Instruction::Pop);
+            }
+            VirStatement::IndexAssign { .. } => {}
+            VirStatement::FunctionDecl { .. } => {}
+        }
+        Ok(())
+    }
+
+    fn compile_expression(&mut self, expr: &VirExpr) -> Result<(), String> {
+        match expr {
+            VirExpr::Int(n) => self.instructions.push(Instruction::PushInt(*n)),
+            VirExpr::Float(f) => self.instructions.push(Instruction::PushFloat(*f)),
+            VirExpr::String(s) => self.instructions.push(Instruction::PushString(s.clone())),
+            VirExpr::Bool(b) => self.instructions.push(Instruction::PushBool(*b)),
+            VirExpr::Var(name) => self.instructions.push(Instruction::LoadVar(name.clone())),
+            VirExpr::Binary { left, op, right } => {
+                self.compile_expression(left)?;
+                self.compile_expression(right)?;
+
+                let bin_op = match op {
+                    VirOp::Add => BinaryOp::Add,
+                    VirOp::Sub => BinaryOp::Sub,
+                    VirOp::Mul => BinaryOp::Mul,
+                    VirOp::Div => BinaryOp::Div,
+                    VirOp::Equal => BinaryOp::Equal,
+                    VirOp::NotEqual => BinaryOp::NotEqual,
+                    VirOp::LessThan => BinaryOp::LessThan,
+                    VirOp::LessEqual => BinaryOp::LessEqual,
+                    VirOp::GreaterThan => BinaryOp::GreaterThan,
+                    VirOp::GreaterEqual => BinaryOp::GreaterEqual,
+                    VirOp::And => BinaryOp::And,
+                    VirOp::Or => BinaryOp::Or,
+                };
+                self.instructions.push(Instruction::Binary(bin_op));
+            }
+            VirExpr::Call { name, args } => {
+                let arg_count = args.len();
+                for arg in args {
+                    self.compile_expression(arg)?;
+                }
+                self.instructions.push(Instruction::Call(name.clone(), arg_count));
+            }
+            VirExpr::List(_) | VirExpr::Map(_) | VirExpr::Index { .. } => {}
+        }
+        Ok(())
+    }
+
+    fn emit_dummy_jump_if_false(&mut self) -> usize {
+        let idx = self.instructions.len();
+        self.instructions.push(Instruction::JumpIfFalse(0));
+        idx
+    }
+
+    fn emit_dummy_jump(&mut self) -> usize {
+        let idx = self.instructions.len();
+        self.instructions.push(Instruction::Jump(0));
+        idx
+    }
+
+    fn patch_jump_target(&mut self, instruction_idx: usize, target: usize) {
+        match &mut self.instructions[instruction_idx] {
+            Instruction::JumpIfFalse(ref mut t) => *t = target,
+            Instruction::Jump(ref mut t) => *t = target,
+            _ => panic!("Apenas instruções de salto podem ser modificadas"),
+        }
+    }
+}
+
+--- FICHEIRO: crates/navoa_lexer/src/lib.rs ---
+#[derive(Debug, PartialEq, Clone)]
+pub enum Token {
+    // Tipos de Dados
+    Number(f64),
+    StringLit(String),
+    Boolean(bool),
+    Identifier(String),
+
+    // Palavras-Chave Unificadas
+    Let,        // definir, let, definire, definir_var, definieren, set
+    If,         // se, if, si, si_cond, wenn
+    Else,       // senao, else, altrimenti, sinon, sino, sonst
+    While,      // enquanto, while, mentre, tantque, mientras, solange
+    Print,      // imprimir, print, stampa, imprimer, drucken
+    Return,     // retornar, return, restituisci, retourner, zurueck
+
+    // Operadores Lógicos
+    And,        // and, e_logico, et, und, &&
+    Or,         // ou, or, ou_log, oder, ||
+    Not,        // nao, not, non, pas, nicht, !
+
+    // Operadores e Símbolos
+    Assign,             // =
+    Plus,               // +
+    Minus,              // -
+    Star,               // *
+    Slash,              // /
+    Equal,              // ==
+    NotEqual,           // !=
+    Greater,            // >
+    GreaterOrEqual,     // >=
+    Less,               // <
+    LessOrEqual,        // <=
+    LParen,             // (
+    RParen,             // )
+    LBrace,             // {
+    RBrace,             // }
+    Semicolon,          // ;
+}
+
+pub struct Lexer {
+    input: Vec<char>,
+    position: usize,
+}
+
+impl Lexer {
+    pub fn new(input: &str) -> Self {
+        Self {
+            input: input.chars().collect(),
+            position: 0,
+        }
+    }
+
+    pub fn tokenize(&mut self) -> Result<Vec<Token>, String> {
+        let mut tokens = Vec::new();
+
+        while self.position < self.input.len() {
+            let ch = self.input[self.position];
+
+            match ch {
+                ' ' | '\t' | '\r' | '\n' => {
+                    self.position += 1;
+                }
+                '=' => {
+                    if self.peek_next() == Some('=') {
+                        self.position += 2;
+                        tokens.push(Token::Equal);
+                    } else {
+                        self.position += 1;
+                        tokens.push(Token::Assign);
+                    }
+                }
+                '!' => {
+                    if self.peek_next() == Some('=') {
+                        self.position += 2;
+                        tokens.push(Token::NotEqual);
+                    } else {
+                        self.position += 1;
+                        tokens.push(Token::Not);
+                    }
+                }
+                '&' => {
+                    if self.peek_next() == Some('&') {
+                        self.position += 2;
+                        tokens.push(Token::And);
+                    } else {
+                        return Err("Caráter desconhecido: &".to_string());
+                    }
+                }
+                '|' => {
+                    if self.peek_next() == Some('|') {
+                        self.position += 2;
+                        tokens.push(Token::Or);
+                    } else {
+                        return Err("Caráter desconhecido: |".to_string());
+                    }
+                }
+                '/' => {
+                    if self.peek_next() == Some('/') {
+                        while self.position < self.input.len() && self.input[self.position] != '\n' {
+                            self.position += 1;
+                        }
+                    } else {
+                        self.position += 1;
+                        tokens.push(Token::Slash);
+                    }
+                }
+                '>' => {
+                    if self.peek_next() == Some('=') {
+                        self.position += 2;
+                        tokens.push(Token::GreaterOrEqual);
+                    } else {
+                        self.position += 1;
+                        tokens.push(Token::Greater);
+                    }
+                }
+                '<' => {
+                    if self.peek_next() == Some('=') {
+                        self.position += 2;
+                        tokens.push(Token::LessOrEqual);
+                    } else {
+                        self.position += 1;
+                        tokens.push(Token::Less);
+                    }
+                }
+                '+' => { self.position += 1; tokens.push(Token::Plus); }
+                '-' => { self.position += 1; tokens.push(Token::Minus); }
+                '*' => { self.position += 1; tokens.push(Token::Star); }
+                '(' => { self.position += 1; tokens.push(Token::LParen); }
+                ')' => { self.position += 1; tokens.push(Token::RParen); }
+                '{' => { self.position += 1; tokens.push(Token::LBrace); }
+                '}' => { self.position += 1; tokens.push(Token::RBrace); }
+                ';' => { self.position += 1; tokens.push(Token::Semicolon); }
+                '"' => {
+                    tokens.push(self.read_string()?);
+                }
+                _ if ch.is_ascii_digit() => {
+                    tokens.push(self.read_number());
+                }
+                _ if ch.is_alphabetic() || ch == '_' => {
+                    tokens.push(self.read_identifier());
+                }
+                _ => return Err(format!("Caráter desconhecido: {}", ch)),
+            }
+        }
+
+        Ok(tokens)
+    }
+
+    fn peek_next(&self) -> Option<char> {
+        if self.position + 1 < self.input.len() {
+            Some(self.input[self.position + 1])
+        } else {
+            None
+        }
+    }
+
+    fn read_string(&mut self) -> Result<Token, String> {
+        self.position += 1;
+        let start = self.position;
+        while self.position < self.input.len() && self.input[self.position] != '"' {
+            self.position += 1;
+        }
+        if self.position >= self.input.len() {
+            return Err("String não terminada".to_string());
+        }
+        let str_val: String = self.input[start..self.position].iter().collect();
+        self.position += 1;
+        Ok(Token::StringLit(str_val))
+    }
+
+    fn read_number(&mut self) -> Token {
+        let start = self.position;
+        while self.position < self.input.len() && (self.input[self.position].is_ascii_digit() || self.input[self.position] == '.') {
+            self.position += 1;
+        }
+        let num_str: String = self.input[start..self.position].iter().collect();
+        Token::Number(num_str.parse::<f64>().unwrap_or(0.0))
+    }
+
+    fn read_identifier(&mut self) -> Token {
+        let start = self.position;
+        while self.position < self.input.len() && (self.input[self.position].is_alphanumeric() || self.input[self.position] == '_') {
+            self.position += 1;
+        }
+        let ident: String = self.input[start..self.position].iter().collect();
+
+        match ident.as_str() {
+            "definir" | "let" | "definire" | "definir_var" | "definieren" | "set" => Token::Let,
+            "se" | "if" | "si" | "si_cond" | "wenn" => Token::If,
+            "senao" | "else" | "altrimenti" | "sinon" | "sino" | "sonst" => Token::Else,
+            "enquanto" | "while" | "mentre" | "tantque" | "mientras" | "solange" => Token::While,
+            "imprimir" | "print" | "stampa" | "imprimer" | "drucken" => Token::Print,
+            "retornar" | "return" | "restituisci" | "retourner" | "zurueck" => Token::Return,
+            "and" | "e_logico" | "et" | "und" => Token::And,
+            "ou" | "or" | "ou_log" | "oder" => Token::Or,
+            "nao" | "not" | "non" | "pas" | "nicht" => Token::Not,
+            "verdadeiro" | "true" | "vero" | "vrai" | "verdadero" | "wahr" => Token::Boolean(true),
+            "falso" | "false" | "faux" | "falsch" => Token::Boolean(false),
+            _ => Token::Identifier(ident),
+        }
+    }
+}
+
+--- FICHEIRO: crates/navoa_lexer/src/token.rs ---
+#[derive(Clone, Debug, PartialEq)]
+pub enum Token {
+    Let,
+    Fn,
+    If,
+    Else,
+    While,
+    Return,
+    True,
+    False,
+    Identifier(String),
+    Number(f64),
+    String(String),
+    LParen,
+    RParen,
+    LBrace,
+    RBrace,
+    LBracket,
+    RBracket,
+    Comma,
+    Semicolon,
+    Assign,
+    EqEqual,
+    BangEqual,
+    LessThan,
+    LessThanOrEqual,
+    GreaterThan,
+    GreaterThanOrEqual,
+    Plus,
+    Minus,
+    Star,
+    Slash,
+    Eof,
+}
+
+--- FICHEIRO: crates/navoa_parser/src/ast.rs ---
+#[derive(Debug, Clone, PartialEq)]
+pub enum BinaryOp { Add, Sub, Mul, Div, Equal, LessThan, GreaterThan }
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Expr {
+    Number(f64),
+    String(String),
+    Variable(String),
+    Array(Vec<Expr>),
+    Index { target: Box<Expr>, index: Box<Expr> },
+    Call { name: String, args: Vec<Expr> },
+    Binary { left: Box<Expr>, op: BinaryOp, right: Box<Expr> },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Statement {
+    VarDecl { name: String, value: Expr },
+    Assign { name: String, value: Expr },
+    FunctionDecl { name: String, params: Vec<String>, body: Vec<Statement> },
+    Return(Expr),
+    Print(Expr),
+    Expr(Expr),
+    If { condition: Expr, then_branch: Vec<Statement>, else_branch: Option<Vec<Statement>> },
+    While { condition: Expr, body: Vec<Statement> },
+}
+
+--- FICHEIRO: crates/navoa_parser/src/lib.rs ---
+pub mod parser;
+
+pub use parser::Parser;
+
+--- FICHEIRO: crates/navoa_parser/src/parser.rs ---
+use navoa_lexer::{Lexer, Token};
+use navoa_vir::{VirExpr, VirOp, VirStatement};
+
+pub struct Parser {
+    tokens: Vec<Token>,
+    current: usize,
+}
+
+impl Parser {
+    pub fn new(source: &str) -> Result<Self, String> {
+        let mut lexer = Lexer::new(source);
+        let tokens = lexer.tokenize().map_err(|e| format!("Erro Léxico: {}", e))?;
+        Ok(Parser { tokens, current: 0 })
+    }
+
+    pub fn parse_program(&mut self) -> Result<Vec<VirStatement>, String> {
+        let mut statements = Vec::new();
+        while !self.is_at_end() {
+            statements.push(self.parse_statement()?);
+        }
+        Ok(statements)
+    }
+
+    fn parse_statement(&mut self) -> Result<VirStatement, String> {
+        if self.match_token(&[Token::Let]) {
+            self.parse_var_decl()
+        } else if self.match_token(&[Token::Print]) {
+            self.parse_print_statement()
+        } else if self.match_token(&[Token::If]) {
+            self.parse_if_statement()
+        } else if self.match_token(&[Token::While]) {
+            self.parse_while_statement()
+        } else if self.match_token(&[Token::Return]) {
+            self.parse_return_statement()
+        } else if self.check_assignment() {
+            self.parse_assignment()
+        } else {
+            let expr = self.parse_expression()?;
+            self.match_token(&[Token::Semicolon]);
+            Ok(VirStatement::Expr(expr))
+        }
+    }
+
+    fn parse_var_decl(&mut self) -> Result<VirStatement, String> {
+        let name = match self.advance() {
+            Some(Token::Identifier(n)) => n.clone(),
+            token => return Err(format!("Esperado nome da variável após declaração. Encontrado: {:?}", token)),
+        };
+
+        if !self.match_token(&[Token::Assign]) {
+            return Err("Esperado '=' na inicialização da variável.".to_string());
+        }
+
+        let initializer = self.parse_expression()?;
+        self.match_token(&[Token::Semicolon]);
+
+        Ok(VirStatement::VarDecl { name, initializer })
+    }
+
+    fn check_assignment(&self) -> bool {
+        if let Some(Token::Identifier(_)) = self.peek() {
+            if let Some(Token::Assign) = self.peek_next() {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn parse_assignment(&mut self) -> Result<VirStatement, String> {
+        let name = match self.advance() {
+            Some(Token::Identifier(n)) => n.clone(),
+            _ => unreachable!(),
+        };
+
+        self.advance(); // Consome '='
+
+        let value = self.parse_expression()?;
+        self.match_token(&[Token::Semicolon]);
+
+        Ok(VirStatement::Assign { name, value })
+    }
+
+    fn parse_print_statement(&mut self) -> Result<VirStatement, String> {
+        let has_paren = self.match_token(&[Token::LParen]);
+        let expr = self.parse_expression()?;
+        if has_paren {
+            if !self.match_token(&[Token::RParen]) {
+                return Err("Esperado ')' após expressão de impressão.".to_string());
+            }
+        }
+        self.match_token(&[Token::Semicolon]);
+        Ok(VirStatement::Print(expr))
+    }
+
+    fn parse_if_statement(&mut self) -> Result<VirStatement, String> {
+        let has_paren = self.match_token(&[Token::LParen]);
+        let condition = self.parse_expression()?;
+        if has_paren {
+            if !self.match_token(&[Token::RParen]) {
+                return Err("Esperado ')' após condição do 'se'.".to_string());
+            }
+        }
+
+        if !self.match_token(&[Token::LBrace]) {
+            return Err("Esperado '{' após condição do 'se'.".to_string());
+        }
+
+        let then_branch = self.parse_block()?;
+
+        let else_branch = if self.match_token(&[Token::Else]) {
+            if self.match_token(&[Token::If]) {
+                Some(vec![self.parse_if_statement()?])
+            } else if self.match_token(&[Token::LBrace]) {
+                Some(self.parse_block()?)
+            } else {
+                return Err("Esperado '{' ou 'se' após 'senao'.".to_string());
+            }
+        } else {
+            None
+        };
+
+        Ok(VirStatement::If {
+            condition,
+            then_branch,
+            else_branch,
+        })
+    }
+
+    fn parse_while_statement(&mut self) -> Result<VirStatement, String> {
+        let has_paren = self.match_token(&[Token::LParen]);
+        let condition = self.parse_expression()?;
+        if has_paren {
+            if !self.match_token(&[Token::RParen]) {
+                return Err("Esperado ')' após condição do 'enquanto'.".to_string());
+            }
+        }
+
+        if !self.match_token(&[Token::LBrace]) {
+            return Err("Esperado '{' no bloco do 'enquanto'.".to_string());
+        }
+
+        let body = self.parse_block()?;
+
+        Ok(VirStatement::While { condition, body })
+    }
+
+    fn parse_return_statement(&mut self) -> Result<VirStatement, String> {
+        if self.check(&Token::Semicolon) || self.check(&Token::RBrace) || self.is_at_end() {
+            self.match_token(&[Token::Semicolon]);
+            Ok(VirStatement::Return(None))
+        } else {
+            let value = self.parse_expression()?;
+            self.match_token(&[Token::Semicolon]);
+            Ok(VirStatement::Return(Some(value)))
+        }
+    }
+
+    fn parse_block(&mut self) -> Result<Vec<VirStatement>, String> {
+        let mut statements = Vec::new();
+        while !self.check(&Token::RBrace) && !self.is_at_end() {
+            statements.push(self.parse_statement()?);
+        }
+
+        if !self.match_token(&[Token::RBrace]) {
+            return Err("Esperado '}' no final do bloco.".to_string());
+        }
+
+        Ok(statements)
+    }
+
+    fn parse_expression(&mut self) -> Result<VirExpr, String> {
+        self.parse_logical_or()
+    }
+
+    fn parse_logical_or(&mut self) -> Result<VirExpr, String> {
+        let mut expr = self.parse_logical_and()?;
+
+        while self.match_token(&[Token::Or]) {
+            let right = self.parse_logical_and()?;
+            expr = VirExpr::Binary {
+                left: Box::new(expr),
+                op: VirOp::Or,
+                right: Box::new(right),
+            };
+        }
+
+        Ok(expr)
+    }
+
+    fn parse_logical_and(&mut self) -> Result<VirExpr, String> {
+        let mut expr = self.parse_equality()?;
+
+        while self.match_token(&[Token::And]) {
+            let right = self.parse_equality()?;
+            expr = VirExpr::Binary {
+                left: Box::new(expr),
+                op: VirOp::And,
+                right: Box::new(right),
+            };
+        }
+
+        Ok(expr)
+    }
+
+    fn parse_equality(&mut self) -> Result<VirExpr, String> {
+        let mut expr = self.parse_comparison()?;
+
+        while let Some(op) = self.match_equality_op() {
+            let right = self.parse_comparison()?;
+            expr = VirExpr::Binary {
+                left: Box::new(expr),
+                op,
+                right: Box::new(right),
+            };
+        }
+
+        Ok(expr)
+    }
+
+    fn match_equality_op(&mut self) -> Option<VirOp> {
+        if self.match_token(&[Token::Equal]) {
+            Some(VirOp::Equal)
+        } else if self.match_token(&[Token::NotEqual]) {
+            Some(VirOp::NotEqual)
+        } else {
+            None
+        }
+    }
+
+    fn parse_comparison(&mut self) -> Result<VirExpr, String> {
+        let mut expr = self.parse_term()?;
+
+        while let Some(op) = self.match_comparison_op() {
+            let right = self.parse_term()?;
+            expr = VirExpr::Binary {
+                left: Box::new(expr),
+                op,
+                right: Box::new(right),
+            };
+        }
+
+        Ok(expr)
+    }
+
+    fn match_comparison_op(&mut self) -> Option<VirOp> {
+        if self.match_token(&[Token::Less]) {
+            Some(VirOp::LessThan)
+        } else if self.match_token(&[Token::LessOrEqual]) {
+            Some(VirOp::LessEqual)
+        } else if self.match_token(&[Token::Greater]) {
+            Some(VirOp::GreaterThan)
+        } else if self.match_token(&[Token::GreaterOrEqual]) {
+            Some(VirOp::GreaterEqual)
+        } else {
+            None
+        }
+    }
+
+    fn parse_term(&mut self) -> Result<VirExpr, String> {
+        let mut expr = self.parse_factor()?;
+
+        while let Some(op) = self.match_term_op() {
+            let right = self.parse_factor()?;
+            expr = VirExpr::Binary {
+                left: Box::new(expr),
+                op,
+                right: Box::new(right),
+            };
+        }
+
+        Ok(expr)
+    }
+
+    fn match_term_op(&mut self) -> Option<VirOp> {
+        if self.match_token(&[Token::Plus]) {
+            Some(VirOp::Add)
+        } else if self.match_token(&[Token::Minus]) {
+            Some(VirOp::Sub)
+        } else {
+            None
+        }
+    }
+
+    fn parse_factor(&mut self) -> Result<VirExpr, String> {
+        let mut expr = self.parse_primary()?;
+
+        while let Some(op) = self.match_factor_op() {
+            let right = self.parse_primary()?;
+            expr = VirExpr::Binary {
+                left: Box::new(expr),
+                op,
+                right: Box::new(right),
+            };
+        }
+
+        Ok(expr)
+    }
+
+    fn match_factor_op(&mut self) -> Option<VirOp> {
+        if self.match_token(&[Token::Star]) {
+            Some(VirOp::Mul)
+        } else if self.match_token(&[Token::Slash]) {
+            Some(VirOp::Div)
+        } else {
+            None
+        }
+    }
+
+    fn parse_primary(&mut self) -> Result<VirExpr, String> {
+        if let Some(token) = self.advance() {
+            match token {
+                Token::Number(n) => {
+                    if n.fract() == 0.0 {
+                        Ok(VirExpr::Int(*n as i64))
+                    } else {
+                        Ok(VirExpr::Float(*n))
+                    }
+                }
+                Token::StringLit(s) => Ok(VirExpr::String(s.clone())),
+                Token::Boolean(b) => Ok(VirExpr::Bool(*b)),
+                Token::Identifier(name) => {
+                    let name = name.clone();
+                    if self.match_token(&[Token::LParen]) {
+                        let mut args = Vec::new();
+                        if !self.check(&Token::RParen) {
+                            args.push(self.parse_expression()?);
+                        }
+                        if !self.match_token(&[Token::RParen]) {
+                            return Err("Esperado ')' após argumentos da função.".to_string());
+                        }
+                        Ok(VirExpr::Call { name, args })
+                    } else {
+                        Ok(VirExpr::Var(name))
+                    }
+                }
+                Token::LParen => {
+                    let expr = self.parse_expression()?;
+                    if !self.match_token(&[Token::RParen]) {
+                        return Err("Esperado ')' após expressão.".to_string());
+                    }
+                    Ok(expr)
+                }
+                _ => Err(format!("Sintaxe inválida ao analisar expressão: {:?}", token)),
+            }
+        } else {
+            Err("Fim inesperado do ficheiro durante a análise.".to_string())
+        }
+    }
+
+    fn is_at_end(&self) -> bool {
+        self.current >= self.tokens.len()
+    }
+
+    fn peek(&self) -> Option<&Token> {
+        self.tokens.get(self.current)
+    }
+
+    fn peek_next(&self) -> Option<&Token> {
+        self.tokens.get(self.current + 1)
+    }
+
+    fn check(&self, token: &Token) -> bool {
+        if let Some(t) = self.peek() {
+            t == token
+        } else {
+            false
+        }
+    }
+
+    fn match_token(&mut self, types: &[Token]) -> bool {
+        for t in types {
+            if self.check(t) {
+                self.advance();
+                return true;
+            }
+        }
+        false
+    }
+
+    fn advance(&mut self) -> Option<&Token> {
+        if !self.is_at_end() {
+            let token = self.tokens.get(self.current);
+            self.current += 1;
+            token
+        } else {
+            None
+        }
+    }
+}
+
+--- FICHEIRO: crates/navoa_vir/src/lib.rs ---
+#[derive(Debug, Clone, PartialEq)]
+pub enum VirOp {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Equal,
+    NotEqual,
+    LessThan,
+    LessEqual,
+    GreaterThan,
+    GreaterEqual,
+    And,
+    Or,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum VirExpr {
+    Int(i64),
+    Float(f64),
+    String(String),
+    Bool(bool),
+    List(Vec<VirExpr>),
+    Map(Vec<(VirExpr, VirExpr)>),
+    Index {
+        target: Box<VirExpr>,
+        index: Box<VirExpr>,
+    },
+    Var(String),
+    Binary {
+        left: Box<VirExpr>,
+        op: VirOp,
+        right: Box<VirExpr>,
+    },
+    Call {
+        name: String,
+        args: Vec<VirExpr>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum VirStatement {
+    VarDecl {
+        name: String,
+        initializer: VirExpr,
+    },
+    Assign {
+        name: String,
+        value: VirExpr,
+    },
+    IndexAssign {
+        target: VirExpr,
+        index: VirExpr,
+        value: VirExpr,
+    },
+    FunctionDecl {
+        name: String,
+        params: Vec<String>,
+        body: Vec<VirStatement>,
+    },
+    Print(VirExpr),
+    If {
+        condition: VirExpr,
+        then_branch: Vec<VirStatement>,
+        else_branch: Option<Vec<VirStatement>>,
+    },
+    While {
+        condition: VirExpr,
+        body: Vec<VirStatement>,
+    },
+    Return(Option<VirExpr>),
+    Expr(VirExpr),
+}
+
+--- FICHEIRO: crates/navoa_vm/src/lib.rs ---
+use std::collections::HashMap;
+use navoa_bytecode::{BinaryOp, BytecodeProgram, Instruction};
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Value {
+    Int(i64),
+    Float(f64),
+    String(String),
+    Bool(bool),
+    Nil,
+}
+
+impl Value {
+    pub fn is_truthy(&self) -> bool {
+        match self {
+            Value::Bool(b) => *b,
+            Value::Int(n) => *n != 0,
+            Value::Float(f) => *f != 0.0,
+            Value::String(s) => !s.is_empty(),
+            Value::Nil => false,
+        }
+    }
+}
+
+impl std::fmt::Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Value::Int(n) => write!(f, "{}", n),
+            Value::Float(fl) => write!(f, "{}", fl),
+            Value::String(s) => write!(f, "{}", s),
+            Value::Bool(b) => write!(f, "{}", if *b { "verdadeiro" } else { "falso" }),
+            Value::Nil => write!(f, "nulo"),
+        }
+    }
+}
+
+pub struct Vm {
+    stack: Vec<Value>,
+    globals: HashMap<String, Value>,
+}
+
+impl Vm {
+    pub fn new() -> Self {
+        Vm {
+            stack: Vec::new(),
+            globals: HashMap::new(),
+        }
+    }
+
+    pub fn run(&mut self, program: &BytecodeProgram) -> Result<(), String> {
+        let mut ip = 0;
+        let len = program.instructions.len();
+
+        while ip < len {
+            match &program.instructions[ip] {
+                Instruction::PushInt(n) => {
+                    self.stack.push(Value::Int(*n));
+                }
+                Instruction::PushFloat(f) => {
+                    self.stack.push(Value::Float(*f));
+                }
+                Instruction::PushString(s) => {
+                    self.stack.push(Value::String(s.clone()));
+                }
+                Instruction::PushBool(b) => {
+                    self.stack.push(Value::Bool(*b));
+                }
+                Instruction::StoreVar(name) => {
+                    let val = self.stack.pop().ok_or("Pilha vazia ao armazenar variável.")?;
+                    self.globals.insert(name.clone(), val);
+                }
+                Instruction::LoadVar(name) => {
+                    let val = self
+                        .globals
+                        .get(name)
+                        .cloned()
+                        .ok_or_else(|| format!("Variável não definida: '{}'", name))?;
+                    self.stack.push(val);
+                }
+                Instruction::Print => {
+                    let val = self.stack.pop().ok_or("Pilha vazia ao imprimir.")?;
+                    println!("{}", val);
+                }
+                Instruction::Binary(op) => {
+                    let right = self.stack.pop().ok_or("Pilha vazia (operando direito).")?;
+                    let left = self.stack.pop().ok_or("Pilha vazia (operando esquerdo).")?;
+                    let res = eval_binary(&left, op, &right)?;
+                    self.stack.push(res);
+                }
+                Instruction::Jump(target) => {
+                    ip = *target;
+                    continue;
+                }
+                Instruction::JumpIfFalse(target) => {
+                    let condition = self.stack.pop().ok_or("Pilha vazia para condição do salto.")?;
+                    if !condition.is_truthy() {
+                        ip = *target;
+                        continue;
+                    }
+                }
+                Instruction::Pop => {
+                    self.stack.pop();
+                }
+                Instruction::Call(_, _) | Instruction::Return => {}
+            }
+            ip += 1;
+        }
+
+        Ok(())
+    }
+}
+
+fn eval_binary(left: &Value, op: &BinaryOp, right: &Value) -> Result<Value, String> {
+    match (left, op, right) {
+        (Value::Int(l), BinaryOp::Add, Value::Int(r)) => Ok(Value::Int(l + r)),
+        (Value::Int(l), BinaryOp::Sub, Value::Int(r)) => Ok(Value::Int(l - r)),
+        (Value::Int(l), BinaryOp::Mul, Value::Int(r)) => Ok(Value::Int(l * r)),
+        (Value::Int(l), BinaryOp::Div, Value::Int(r)) => {
+            if *r == 0 {
+                Err("Divisão por zero.".to_string())
+            } else {
+                Ok(Value::Int(l / r))
+            }
+        }
+        (Value::Float(l), BinaryOp::Add, Value::Float(r)) => Ok(Value::Float(l + r)),
+        (Value::Float(l), BinaryOp::Sub, Value::Float(r)) => Ok(Value::Float(l - r)),
+        (Value::Float(l), BinaryOp::Mul, Value::Float(r)) => Ok(Value::Float(l * r)),
+        (Value::Float(l), BinaryOp::Div, Value::Float(r)) => Ok(Value::Float(l / r)),
+        (Value::Int(l), BinaryOp::Add, Value::Float(r)) => Ok(Value::Float(*l as f64 + r)),
+        (Value::Float(l), BinaryOp::Add, Value::Int(r)) => Ok(Value::Float(l + *r as f64)),
+
+        (Value::String(l), BinaryOp::Add, Value::String(r)) => Ok(Value::String(format!("{}{}", l, r))),
+        (Value::String(l), BinaryOp::Add, Value::Int(r)) => Ok(Value::String(format!("{}{}", l, r))),
+        (Value::String(l), BinaryOp::Add, Value::Float(r)) => Ok(Value::String(format!("{}{}", l, r))),
+
+        (l, BinaryOp::Equal, r) => Ok(Value::Bool(l == r)),
+        (l, BinaryOp::NotEqual, r) => Ok(Value::Bool(l != r)),
+
+        (Value::Int(l), BinaryOp::LessThan, Value::Int(r)) => Ok(Value::Bool(l < r)),
+        (Value::Int(l), BinaryOp::LessEqual, Value::Int(r)) => Ok(Value::Bool(l <= r)),
+        (Value::Int(l), BinaryOp::GreaterThan, Value::Int(r)) => Ok(Value::Bool(l > r)),
+        (Value::Int(l), BinaryOp::GreaterEqual, Value::Int(r)) => Ok(Value::Bool(l >= r)),
+
+        (Value::Float(l), BinaryOp::LessThan, Value::Float(r)) => Ok(Value::Bool(l < r)),
+        (Value::Float(l), BinaryOp::LessEqual, Value::Float(r)) => Ok(Value::Bool(l <= r)),
+        (Value::Float(l), BinaryOp::GreaterThan, Value::Float(r)) => Ok(Value::Bool(l > r)),
+        (Value::Float(l), BinaryOp::GreaterEqual, Value::Float(r)) => Ok(Value::Bool(l >= r)),
+
+        (l, BinaryOp::And, r) => Ok(Value::Bool(l.is_truthy() && r.is_truthy())),
+        (l, BinaryOp::Or, r) => Ok(Value::Bool(l.is_truthy() || r.is_truthy())),
+
+        _ => Err(format!("Operação binária inválida: {:?} {:?} {:?}", left, op, right)),
+    }
+}
+
+--- FICHEIRO: crates/vortex_vvm/src/lib.rs ---
+use std::collections::HashMap;
+use navoa_bytecode::Chunk;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Capabilities {
+    pub allow_io: bool,
+    pub allow_env: bool,
+}
+
+impl Default for Capabilities {
+    fn default() -> Self {
+        Self {
+            allow_io: false,
+            allow_env: false,
+        }
+    }
+}
+
+pub struct Vvm {
+    stack: Vec<f64>,
+    memory: HashMap<String, f64>,
+    capabilities: Capabilities,
+}
+
+impl Vvm {
+    pub fn new(capabilities: Capabilities) -> Self {
+        Self {
+            stack: Vec::new(),
+            memory: HashMap::new(),
+            capabilities,
+        }
+    }
+
+    pub fn run_chunk(&mut self, chunk: &Chunk) -> Result<(), String> {
+        let mut ip = 0; // Instruction Pointer
+
+        while ip < chunk.code.len() {
+            let opcode = chunk.code[ip];
+            ip += 1;
+
+            match opcode {
+                0x01 => { // PushNum
+                    let const_idx = chunk.code[ip] as usize;
+                    ip += 1;
+                    let val = chunk.constants.get(const_idx)
+                        .ok_or_else(|| format!("Constante inválida no índice {}", const_idx))?;
+                    self.stack.push(*val);
+                }
+                0x02 => { // StoreVar
+                    let str_idx = chunk.code[ip] as usize;
+                    ip += 1;
+                    let var_name = chunk.strings.get(str_idx)
+                        .ok_or_else(|| format!("String inválida no índice {}", str_idx))?;
+                    let val = self.stack.pop()
+                        .ok_or_else(|| "Stack underflow ao guardar variável".to_string())?;
+                    self.memory.insert(var_name.clone(), val);
+                }
+                0x03 => { // LoadVar
+                    let str_idx = chunk.code[ip] as usize;
+                    ip += 1;
+                    let var_name = chunk.strings.get(str_idx)
+                        .ok_or_else(|| format!("String inválida no índice {}", str_idx))?;
+                    let val = self.memory.get(var_name)
+                        .ok_or_else(|| format!("Variável '{}' não encontrada", var_name))?;
+                    self.stack.push(*val);
+                }
+                0x04 => { // Add
+                    let b = self.stack.pop().ok_or("Stack underflow em Add")?;
+                    let a = self.stack.pop().ok_or("Stack underflow em Add")?;
+                    self.stack.push(a + b);
+                }
+                0x05 => { // Sub
+                    let b = self.stack.pop().ok_or("Stack underflow em Sub")?;
+                    let a = self.stack.pop().ok_or("Stack underflow em Sub")?;
+                    self.stack.push(a - b);
+                }
+                0x06 => { // Mul
+                    let b = self.stack.pop().ok_or("Stack underflow em Mul")?;
+                    let a = self.stack.pop().ok_or("Stack underflow em Mul")?;
+                    self.stack.push(a * b);
+                }
+                0x07 => { // Div
+                    let b = self.stack.pop().ok_or("Stack underflow em Div")?;
+                    let a = self.stack.pop().ok_or("Stack underflow em Div")?;
+                    if b == 0.0 {
+                        return Err("Divisão por zero no Bytecode!".to_string());
+                    }
+                    self.stack.push(a / b);
+                }
+                0x08 => { // Print
+                    if !self.capabilities.allow_io {
+                        return Err(" [Segurança] Operação de I/O negada (Deny-by-Default)".to_string());
+                    }
+                    let val = self.stack.pop().ok_or("Stack underflow em Print")?;
+                    println!("[VVM Bytecode Output]: {}", val);
+                }
+                0x00 => { // Halt
+                    break;
+                }
+                _ => return Err(format!("Opcode desconhecido: 0x{:02X}", opcode)),
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn get_var(&self, id: &str) -> Option<&f64> {
+        self.memory.get(id)
+    }
+}
+
+--- FICHEIRO: src/main.rs ---
+use std::collections::HashMap;
+use std::env;
+use std::fs;
+use std::io::{self, Write};
+
+// ==========================================
+// 1. LEXER (Analisador Léxico)
+// ==========================================
+
+#[derive(Debug, Clone, PartialEq)]
+enum Token {
+    Seja,
+    Imprimir,
+    Se,
+    Senao,
+    Enquanto,
+    Funcao,
+    Retorna,
+    Ler,
+    Identificador(String),
+    Numero(f64),
+    Texto(String),
+    Verdadeiro,
+    Falso,
+    Atribuir,          // =
+    Mais,              // +
+    Menos,             // -
+    Multiplicar,       // *
+    Dividir,           // /
+    IgualIgual,        // ==
+    Diferente,         // !=
+    Menor,             // <
+    MenorIgual,        // <=
+    Maior,             // >
+    MaiorIgual,        // >=
+    E,                 // &&
+    Ou,                // ||
+    Nao,               // !
+    ParentesisEsq,     // (
+    ParentesisDir,     // )
+    ChavetaEsq,        // {
+    ChavetaDir,        // }
+    Virgula,           // ,
+    FimDeLinha,
+    EOF,
+}
+
+struct Lexer {
+    chars: Vec<char>,
+    pos: usize,
+}
+
+impl Lexer {
+    fn new(input: &str) -> Self {
+        Lexer {
+            chars: input.chars().collect(),
+            pos: 0,
+        }
+    }
+
+    fn peek(&self) -> Option<&char> {
+        self.chars.get(self.pos)
+    }
+
+    fn advance(&mut self) -> Option<char> {
+        let c = self.chars.get(self.pos).copied();
+        self.pos += 1;
+        c
+    }
+
+    fn tokenize(&mut self) -> Vec<Token> {
+        let mut tokens = Vec::new();
+
+        while let Some(&c) = self.peek() {
+            if c.is_whitespace() {
+                self.advance();
+            } else if c == '/' && self.chars.get(self.pos + 1) == Some(&'/') {
+                while let Some(&nc) = self.peek() {
+                    self.advance();
+                    if nc == '\n' { break; }
+                }
+            } else if c.is_ascii_alphabetic() || c == '_' {
+                let mut ident = String::new();
+                while let Some(&nc) = self.peek() {
+                    if nc.is_ascii_alphanumeric() || nc == '_' {
+                        ident.push(self.advance().unwrap());
+                    } else {
+                        break;
+                    }
+                }
+                match ident.as_str() {
+                    "seja" => tokens.push(Token::Seja),
+                    "imprimir" => tokens.push(Token::Imprimir),
+                    "se" => tokens.push(Token::Se),
+                    "senao" => tokens.push(Token::Senao),
+                    "enquanto" => tokens.push(Token::Enquanto),
+                    "funcao" => tokens.push(Token::Funcao),
+                    "retorna" => tokens.push(Token::Retorna),
+                    "ler" => tokens.push(Token::Ler),
+                    "verdadeiro" => tokens.push(Token::Verdadeiro),
+                    "falso" => tokens.push(Token::Falso),
+                    _ => tokens.push(Token::Identificador(ident)),
+                }
+            } else if c.is_ascii_digit() {
+                let mut num_str = String::new();
+                while let Some(&nc) = self.peek() {
+                    if nc.is_ascii_digit() || nc == '.' {
+                        num_str.push(self.advance().unwrap());
+                    } else {
+                        break;
+                    }
+                }
+                let val: f64 = num_str.parse().unwrap_or(0.0);
+                tokens.push(Token::Numero(val));
+            } else if c == '"' {
+                self.advance();
+                let mut text = String::new();
+                while let Some(&nc) = self.peek() {
+                    if nc == '"' {
+                        self.advance();
+                        break;
+                    } else {
+                        text.push(self.advance().unwrap());
+                    }
+                }
+                tokens.push(Token::Texto(text));
+            } else {
+                match c {
+                    '=' => {
+                        self.advance();
+                        if self.peek() == Some(&'=') {
+                            self.advance();
+                            tokens.push(Token::IgualIgual);
+                        } else {
+                            tokens.push(Token::Atribuir);
+                        }
+                    }
+                    '!' => {
+                        self.advance();
+                        if self.peek() == Some(&'=') {
+                            self.advance();
+                            tokens.push(Token::Diferente);
+                        } else {
+                            tokens.push(Token::Nao);
+                        }
+                    }
+                    '<' => {
+                        self.advance();
+                        if self.peek() == Some(&'=') {
+                            self.advance();
+                            tokens.push(Token::MenorIgual);
+                        } else {
+                            tokens.push(Token::Menor);
+                        }
+                    }
+                    '>' => {
+                        self.advance();
+                        if self.peek() == Some(&'=') {
+                            self.advance();
+                            tokens.push(Token::MaiorIgual);
+                        } else {
+                            tokens.push(Token::Maior);
+                        }
+                    }
+                    '&' => {
+                        self.advance();
+                        if self.peek() == Some(&'&') {
+                            self.advance();
+                            tokens.push(Token::E);
+                        }
+                    }
+                    '|' => {
+                        self.advance();
+                        if self.peek() == Some(&'|') {
+                            self.advance();
+                            tokens.push(Token::Ou);
+                        }
+                    }
+                    '+' => { self.advance(); tokens.push(Token::Mais); }
+                    '-' => { self.advance(); tokens.push(Token::Menos); }
+                    '*' => { self.advance(); tokens.push(Token::Multiplicar); }
+                    '/' => { self.advance(); tokens.push(Token::Dividir); }
+                    '(' => { self.advance(); tokens.push(Token::ParentesisEsq); }
+                    ')' => { self.advance(); tokens.push(Token::ParentesisDir); }
+                    '{' => { self.advance(); tokens.push(Token::ChavetaEsq); }
+                    '}' => { self.advance(); tokens.push(Token::ChavetaDir); }
+                    ',' => { self.advance(); tokens.push(Token::Virgula); }
+                    '\n' => { self.advance(); tokens.push(Token::FimDeLinha); }
+                    _ => { self.advance(); }
+                }
+            }
+        }
+        tokens.push(Token::EOF);
+        tokens
+    }
+}
+
+// ==========================================
+// 2. AST (Árvore Sintática)
+// ==========================================
+
+#[derive(Debug, Clone)]
+enum Expr {
+    Numero(f64),
+    Texto(String),
+    Booleano(bool),
+    Variavel(String),
+    Chamada(String, Vec<Expr>),
+    Ler,
+    BinOp(Box<Expr>, Op, Box<Expr>),
+    UnOp(OpUnaria, Box<Expr>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Op {
+    Mais, Menos, Multiplicar, Dividir,
+    IgualIgual, Diferente, Menor, MenorIgual, Maior, MaiorIgual,
+    E, Ou,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum OpUnaria {
+    Nao, Menos,
+}
+
+#[derive(Debug, Clone)]
+enum Stmt {
+    Atribuicao(String, Expr),
+    Imprimir(Expr),
+    Se(Expr, Vec<Stmt>, Option<Vec<Stmt>>),
+    Enquanto(Expr, Vec<Stmt>),
+    Funcao(String, Vec<String>, Vec<Stmt>),
+    Retorna(Option<Expr>),
+}
+
+// ==========================================
+// 3. PARSER (Analisador Sintático)
+// ==========================================
+
+struct Parser {
+    tokens: Vec<Token>,
+    pos: usize,
+}
+
+impl Parser {
+    fn new(tokens: Vec<Token>) -> Self {
+        Parser { tokens, pos: 0 }
+    }
+
+    fn peek(&self) -> &Token {
+        self.tokens.get(self.pos).unwrap_or(&Token::EOF)
+    }
+
+    fn advance(&mut self) -> Token {
+        let t = self.peek().clone();
+        self.pos += 1;
+        t
+    }
+
+    fn parse(&mut self) -> Vec<Stmt> {
+        let mut statements = Vec::new();
+        while self.peek() != &Token::EOF {
+            if self.peek() == &Token::FimDeLinha {
+                self.advance();
+                continue;
+            }
+            statements.push(self.parse_stmt());
+        }
+        statements
+    }
+
+    fn parse_stmt(&mut self) -> Stmt {
+        match self.peek() {
+            Token::Seja => {
+                self.advance();
+                let nome = match self.advance() {
+                    Token::Identificador(s) => s,
+                    _ => "".to_string(),
+                };
+                if self.peek() == &Token::Atribuir {
+                    self.advance();
+                }
+                let expr = self.parse_expr();
+                Stmt::Atribuicao(nome, expr)
+            }
+            Token::Imprimir => {
+                self.advance();
+                if self.peek() == &Token::ParentesisEsq { self.advance(); }
+                let expr = self.parse_expr();
+                if self.peek() == &Token::ParentesisDir { self.advance(); }
+                Stmt::Imprimir(expr)
+            }
+            Token::Se => {
+                self.advance();
+                let cond = self.parse_expr();
+                if self.peek() == &Token::ChavetaEsq { self.advance(); }
+
+                let mut corpo_se = Vec::new();
+                while self.peek() != &Token::ChavetaDir && self.peek() != &Token::EOF {
+                    if self.peek() == &Token::FimDeLinha { self.advance(); continue; }
+                    corpo_se.push(self.parse_stmt());
+                }
+                if self.peek() == &Token::ChavetaDir { self.advance(); }
+
+                let mut corpo_senao = None;
+                if self.peek() == &Token::Senao {
+                    self.advance();
+                    if self.peek() == &Token::ChavetaEsq { self.advance(); }
+                    let mut senao_stmts = Vec::new();
+                    while self.peek() != &Token::ChavetaDir && self.peek() != &Token::EOF {
+                        if self.peek() == &Token::FimDeLinha { self.advance(); continue; }
+                        senao_stmts.push(self.parse_stmt());
+                    }
+                    if self.peek() == &Token::ChavetaDir { self.advance(); }
+                    corpo_senao = Some(senao_stmts);
+                }
+
+                Stmt::Se(cond, corpo_se, corpo_senao)
+            }
+            Token::Enquanto => {
+                self.advance();
+                let cond = self.parse_expr();
+                if self.peek() == &Token::ChavetaEsq { self.advance(); }
+
+                let mut corpo = Vec::new();
+                while self.peek() != &Token::ChavetaDir && self.peek() != &Token::EOF {
+                    if self.peek() == &Token::FimDeLinha { self.advance(); continue; }
+                    corpo.push(self.parse_stmt());
+                }
+                if self.peek() == &Token::ChavetaDir { self.advance(); }
+
+                Stmt::Enquanto(cond, corpo)
+            }
+            Token::Funcao => {
+                self.advance();
+                let nome = match self.advance() {
+                    Token::Identificador(s) => s,
+                    _ => "".to_string(),
+                };
+                if self.peek() == &Token::ParentesisEsq { self.advance(); }
+                let mut params = Vec::new();
+                while self.peek() != &Token::ParentesisDir && self.peek() != &Token::EOF {
+                    if let Token::Identificador(p) = self.advance() {
+                        params.push(p);
+                    }
+                    if self.peek() == &Token::Virgula { self.advance(); }
+                }
+                if self.peek() == &Token::ParentesisDir { self.advance(); }
+                if self.peek() == &Token::ChavetaEsq { self.advance(); }
+
+                let mut corpo = Vec::new();
+                while self.peek() != &Token::ChavetaDir && self.peek() != &Token::EOF {
+                    if self.peek() == &Token::FimDeLinha { self.advance(); continue; }
+                    corpo.push(self.parse_stmt());
+                }
+                if self.peek() == &Token::ChavetaDir { self.advance(); }
+
+                Stmt::Funcao(nome, params, corpo)
+            }
+            Token::Retorna => {
+                self.advance();
+                let expr = if self.peek() != &Token::FimDeLinha && self.peek() != &Token::ChavetaDir && self.peek() != &Token::EOF {
+                    Some(self.parse_expr())
+                } else {
+                    None
+                };
+                Stmt::Retorna(expr)
+            }
+            _ => {
+                self.advance();
+                Stmt::Imprimir(Expr::Numero(0.0))
+            }
+        }
+    }
+
+    fn parse_expr(&mut self) -> Expr {
+        self.parse_or()
+    }
+
+    fn parse_or(&mut self) -> Expr {
+        let mut expr = self.parse_and();
+        while self.peek() == &Token::Ou {
+            self.advance();
+            let right = self.parse_and();
+            expr = Expr::BinOp(Box::new(expr), Op::Ou, Box::new(right));
+        }
+        expr
+    }
+
+    fn parse_and(&mut self) -> Expr {
+        let mut expr = self.parse_equality();
+        while self.peek() == &Token::E {
+            self.advance();
+            let right = self.parse_equality();
+            expr = Expr::BinOp(Box::new(expr), Op::E, Box::new(right));
+        }
+        expr
+    }
+
+    fn parse_equality(&mut self) -> Expr {
+        let mut expr = self.parse_comparison();
+        loop {
+            let op = match self.peek() {
+                Token::IgualIgual => Op::IgualIgual,
+                Token::Diferente => Op::Diferente,
+                _ => break,
+            };
+            self.advance();
+            let right = self.parse_comparison();
+            expr = Expr::BinOp(Box::new(expr), op, Box::new(right));
+        }
+        expr
+    }
+
+    fn parse_comparison(&mut self) -> Expr {
+        let mut expr = self.parse_term();
+        loop {
+            let op = match self.peek() {
+                Token::Menor => Op::Menor,
+                Token::MenorIgual => Op::MenorIgual,
+                Token::Maior => Op::Maior,
+                Token::MaiorIgual => Op::MaiorIgual,
+                _ => break,
+            };
+            self.advance();
+            let right = self.parse_term();
+            expr = Expr::BinOp(Box::new(expr), op, Box::new(right));
+        }
+        expr
+    }
+
+    fn parse_term(&mut self) -> Expr {
+        let mut expr = self.parse_factor();
+        loop {
+            let op = match self.peek() {
+                Token::Mais => Op::Mais,
+                Token::Menos => Op::Menos,
+                _ => break,
+            };
+            self.advance();
+            let right = self.parse_factor();
+            expr = Expr::BinOp(Box::new(expr), op, Box::new(right));
+        }
+        expr
+    }
+
+    fn parse_factor(&mut self) -> Expr {
+        let mut expr = self.parse_unary();
+        loop {
+            let op = match self.peek() {
+                Token::Multiplicar => Op::Multiplicar,
+                Token::Dividir => Op::Dividir,
+                _ => break,
+            };
+            self.advance();
+            let right = self.parse_unary();
+            expr = Expr::BinOp(Box::new(expr), op, Box::new(right));
+        }
+        expr
+    }
+
+    fn parse_unary(&mut self) -> Expr {
+        if self.peek() == &Token::Nao {
+            self.advance();
+            Expr::UnOp(OpUnaria::Nao, Box::new(self.parse_unary()))
+        } else if self.peek() == &Token::Menos {
+            self.advance();
+            Expr::UnOp(OpUnaria::Menos, Box::new(self.parse_unary()))
+        } else {
+            self.parse_primary()
+        }
+    }
+
+    fn parse_primary(&mut self) -> Expr {
+        match self.advance() {
+            Token::Numero(n) => Expr::Numero(n),
+            Token::Texto(s) => Expr::Texto(s),
+            Token::Verdadeiro => Expr::Booleano(true),
+            Token::Falso => Expr::Booleano(false),
+            Token::Ler => {
+                if self.peek() == &Token::ParentesisEsq { self.advance(); }
+                if self.peek() == &Token::ParentesisDir { self.advance(); }
+                Expr::Ler
+            }
+            Token::Identificador(s) => {
+                if self.peek() == &Token::ParentesisEsq {
+                    self.advance();
+                    let mut args = Vec::new();
+                    while self.peek() != &Token::ParentesisDir && self.peek() != &Token::EOF {
+                        args.push(self.parse_expr());
+                        if self.peek() == &Token::Virgula { self.advance(); }
+                    }
+                    if self.peek() == &Token::ParentesisDir { self.advance(); }
+                    Expr::Chamada(s, args)
+                } else {
+                    Expr::Variavel(s)
+                }
+            }
+            Token::ParentesisEsq => {
+                let expr = self.parse_expr();
+                if self.peek() == &Token::ParentesisDir {
+                    self.advance();
+                }
+                expr
+            }
+            _ => Expr::Numero(0.0),
+        }
+    }
+}
+
+// ==========================================
+// 4. MÁQUINA VIRTUAL / INTERPRETADOR
+// ==========================================
+
+#[derive(Debug, Clone, PartialEq)]
+enum Value {
+    Numero(f64),
+    Texto(String),
+    Booleano(bool),
+}
+
+impl std::fmt::Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Value::Numero(n) => write!(f, "{}", n),
+            Value::Texto(s) => write!(f, "{}", s),
+            Value::Booleano(b) => write!(f, "{}", b),
+        }
+    }
+}
+
+#[derive(Clone)]
+enum Flow {
+    Normal,
+    Return(Value),
+}
+
+struct Interpreter {
+    env: HashMap<String, Value>,
+    functions: HashMap<String, (Vec<String>, Vec<Stmt>)>,
+}
+
+impl Interpreter {
+    fn new() -> Self {
+        Interpreter {
+            env: HashMap::new(),
+            functions: HashMap::new(),
+        }
+    }
+
+    fn interpret(&mut self, statements: Vec<Stmt>) {
+        for stmt in statements {
+            self.execute_stmt(stmt);
+        }
+    }
+
+    fn execute_stmt(&mut self, stmt: Stmt) -> Flow {
+        match stmt {
+            Stmt::Atribuicao(name, expr) => {
+                let val = self.eval_expr(expr);
+                self.env.insert(name, val);
+                Flow::Normal
+            }
+            Stmt::Imprimir(expr) => {
+                let val = self.eval_expr(expr);
+                println!("{}", val);
+                Flow::Normal
+            }
+            Stmt::Se(cond, corpo_se, corpo_senao) => {
+                let res = self.eval_expr(cond);
+                let executar_se = match res {
+                    Value::Booleano(b) => b,
+                    Value::Numero(n) => n != 0.0,
+                    Value::Texto(s) => !s.is_empty(),
+                };
+
+                if executar_se {
+                    for s in corpo_se {
+                        match self.execute_stmt(s) {
+                            Flow::Return(v) => return Flow::Return(v),
+                            Flow::Normal => {}
+                        }
+                    }
+                } else if let Some(senao_stmts) = corpo_senao {
+                    for s in senao_stmts {
+                        match self.execute_stmt(s) {
+                            Flow::Return(v) => return Flow::Return(v),
+                            Flow::Normal => {}
+                        }
+                    }
+                }
+                Flow::Normal
+            }
+            Stmt::Enquanto(cond, corpo) => {
+                loop {
+                    let res = self.eval_expr(cond.clone());
+                    let continuar = match res {
+                        Value::Booleano(b) => b,
+                        Value::Numero(n) => n != 0.0,
+                        Value::Texto(s) => !s.is_empty(),
+                    };
+
+                    if !continuar { break; }
+
+                    for s in corpo.clone() {
+                        match self.execute_stmt(s) {
+                            Flow::Return(v) => return Flow::Return(v),
+                            Flow::Normal => {}
+                        }
+                    }
+                }
+                Flow::Normal
+            }
+            Stmt::Funcao(nome, params, corpo) => {
+                self.functions.insert(nome, (params, corpo));
+                Flow::Normal
+            }
+            Stmt::Retorna(expr) => {
+                let val = match expr {
+                    Some(e) => self.eval_expr(e),
+                    None => Value::Numero(0.0),
+                };
+                Flow::Return(val)
+            }
+        }
+    }
+
+    fn call_function(&mut self, name: &str, args: Vec<Expr>) -> Value {
+        let (params, corpo) = match self.functions.get(name) {
+            Some(f) => (f.0.clone(), f.1.clone()),
+            None => {
+                println!("Erro: Função '{}' não encontrada.", name);
+                return Value::Numero(0.0);
+            }
+        };
+
+        let evaluated_args: Vec<Value> = args.into_iter().map(|arg| self.eval_expr(arg)).collect();
+
+        let mut local_env = self.env.clone();
+        for (param, val) in params.into_iter().zip(evaluated_args) {
+            local_env.insert(param, val);
+        }
+
+        let old_env = std::mem::replace(&mut self.env, local_env);
+        let mut ret_val = Value::Numero(0.0);
+
+        for stmt in corpo {
+            match self.execute_stmt(stmt) {
+                Flow::Return(v) => {
+                    ret_val = v;
+                    break;
+                }
+                Flow::Normal => {}
+            }
+        }
+
+        self.env = old_env;
+        ret_val
+    }
+
+    fn eval_expr(&mut self, expr: Expr) -> Value {
+        match expr {
+            Expr::Numero(n) => Value::Numero(n),
+            Expr::Texto(s) => Value::Texto(s),
+            Expr::Booleano(b) => Value::Booleano(b),
+            Expr::Variavel(name) => {
+                self.env.get(&name).cloned().unwrap_or(Value::Numero(0.0))
+            }
+            Expr::Ler => {
+                io::stdout().flush().unwrap();
+                let mut input = String::new();
+                io::stdin().read_line(&mut input).unwrap();
+                Value::Texto(input.trim().to_string())
+            }
+            Expr::Chamada(name, args) => {
+                self.call_function(&name, args)
+            }
+            Expr::UnOp(op, expr) => {
+                let val = self.eval_expr(*expr);
+                match (op, val) {
+                    (OpUnaria::Nao, Value::Booleano(b)) => Value::Booleano(!b),
+                    (OpUnaria::Menos, Value::Numero(n)) => Value::Numero(-n),
+                    _ => Value::Numero(0.0),
+                }
+            }
+            Expr::BinOp(left, op, right) => {
+                let l = self.eval_expr(*left);
+                let r = self.eval_expr(*right);
+
+                match (l, op, r) {
+                    (Value::Numero(a), Op::Mais, Value::Numero(b)) => Value::Numero(a + b),
+                    (Value::Texto(a), Op::Mais, Value::Texto(b)) => Value::Texto(format!("{}{}", a, b)),
+                    (Value::Numero(a), Op::Menos, Value::Numero(b)) => Value::Numero(a - b),
+                    (Value::Numero(a), Op::Multiplicar, Value::Numero(b)) => Value::Numero(a * b),
+                    (Value::Numero(a), Op::Dividir, Value::Numero(b)) => Value::Numero(a / b),
+
+                    (Value::Numero(a), Op::IgualIgual, Value::Numero(b)) => Value::Booleano(a == b),
+                    (Value::Texto(a), Op::IgualIgual, Value::Texto(b)) => Value::Booleano(a == b),
+                    (Value::Booleano(a), Op::IgualIgual, Value::Booleano(b)) => Value::Booleano(a == b),
+
+                    (Value::Numero(a), Op::Diferente, Value::Numero(b)) => Value::Booleano(a != b),
+                    (Value::Texto(a), Op::Diferente, Value::Texto(b)) => Value::Booleano(a != b),
+
+                    (Value::Numero(a), Op::Menor, Value::Numero(b)) => Value::Booleano(a < b),
+                    (Value::Numero(a), Op::MenorIgual, Value::Numero(b)) => Value::Booleano(a <= b),
+                    (Value::Numero(a), Op::Maior, Value::Numero(b)) => Value::Booleano(a > b),
+                    (Value::Numero(a), Op::MaiorIgual, Value::Numero(b)) => Value::Booleano(a >= b),
+
+                    (Value::Booleano(a), Op::E, Value::Booleano(b)) => Value::Booleano(a && b),
+                    (Value::Booleano(a), Op::Ou, Value::Booleano(b)) => Value::Booleano(a || b),
+
+                    _ => Value::Numero(0.0),
+                }
+            }
+        }
+    }
+}
+
+// ==========================================
+// 5. MAIN
+// ==========================================
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        println!("Uso: navoa_cli <ficheiro.nv>");
+        return;
+    }
+
+    let filename = &args[1];
+    let code = match fs::read_to_string(filename) {
+        Ok(content) => content,
+        Err(_) => {
+            println!("Erro ao ler o ficheiro: {}", filename);
+            return;
+        }
+    };
+
+    let mut lexer = Lexer::new(&code);
+    let tokens = lexer.tokenize();
+
+    let mut parser = Parser::new(tokens);
+    let statements = parser.parse();
+
+    let mut interpreter = Interpreter::new();
+    interpreter.interpret(statements);
+}

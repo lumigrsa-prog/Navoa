@@ -1,0 +1,7 @@
+seja x = 20;
+seja y = 30;
+seja soma = x + y;
+
+seja db = db_open("test_res.db");
+db_query(db, "CREATE TABLE IF NOT EXISTS resultado (val INTEGER);");
+db_query(db, "INSERT INTO resultado VALUES (50);");

@@ -1,0 +1,18 @@
+// Teste Recursivo Válido e Compatível com a VM Vortex
+
+funcao somar_ate(n) {
+    se n == 0 {
+        retornar 0;
+    } senao {
+        retornar n + somar_ate(n - 1);
+    }
+}
+
+seja dados = [10, 25, 50];
+seja resultado = somar_ate(3) + dados[1];
+
+se resultado > 30 {
+    escrever_ficheiro("resultado_valido.txt", resultado);
+} senao {
+    escrever_ficheiro("resultado_valido.txt", 0);
+}

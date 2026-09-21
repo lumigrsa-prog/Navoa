@@ -1,0 +1,5 @@
+pub enum VirExpr {
+    Int { value: i64, span: Span },
+    Var { name: String, span: Span },
+    // ...
+}

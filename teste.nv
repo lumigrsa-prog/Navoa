@@ -1,0 +1,11 @@
+seja x = 0;
+
+enquanto (x < 3) {
+    print(x);
+    se (x == 1) {
+        print("parabens, e um!");
+    } senao {
+        print("outro valor");
+    }
+    x = x + 1;
+}

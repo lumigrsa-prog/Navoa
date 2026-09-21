@@ -1,0 +1,4 @@
+// Teste de File I/O no Vortex
+write_file("dados.txt", "Olá do Vortex no Termux!");
+let conteudo = read_file("dados.txt");
+print(conteudo);

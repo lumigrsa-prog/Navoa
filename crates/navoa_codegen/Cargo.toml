@@ -1,0 +1,8 @@
+[package]
+name = "navoa_codegen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_vir = { path = "../navoa_vir" }
+navoa_bytecode = { path = "../navoa_bytecode" }

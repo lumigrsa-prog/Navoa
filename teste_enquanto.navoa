@@ -1,0 +1,5 @@
+definir i = 1;
+enquanto i <= 3 {
+    imprimir i;
+    definir i = i + 1;
+}

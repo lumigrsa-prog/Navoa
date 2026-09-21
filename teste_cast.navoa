@@ -1,0 +1,2 @@
+definir idade = 40;
+imprimir "Idade: " + texto(idade);

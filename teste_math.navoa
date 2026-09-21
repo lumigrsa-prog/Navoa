@@ -1,0 +1,4 @@
+definir a = 10;
+definir b = 2;
+definir res = (a * b) - 4;
+imprimir res;

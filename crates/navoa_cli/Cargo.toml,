@@ -1,0 +1,11 @@
+[package]
+name = "navoa_cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ctrlc = "3.4"
+navoa_lexer = { path = "../navoa_lexer" }
+navoa_parser = { path = "../navoa_parser" }
+navoa_codegen = { path = "../navoa_codegen" }
+navoa_vm = { path = "../navoa_vm" }

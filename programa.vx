@@ -1,0 +1,7 @@
+funcao calcular_dobro(val) {
+    retornar val * 2;
+}
+
+seja dados = [10, 25, 50];
+seja resultado = calcular_dobro(dados[1]);
+imprimir resultado;

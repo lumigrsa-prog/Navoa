@@ -1,0 +1,12 @@
+// Exemplo conceptual para a VM
+pub struct CallFrame {
+    pub chunk: Chunk,
+    pub ip: usize,
+    pub slots_pointer: usize, // Onde começam as variáveis locais desta função na pilha da VM
+}
+
+pub struct VM {
+    stack: Vec<Value>,
+    frames: Vec<CallFrame>, // Pilha de chamadas de funções
+    // ... globais, etc.
+}

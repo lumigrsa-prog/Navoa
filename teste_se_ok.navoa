@@ -1,0 +1,6 @@
+let x = 10;
+se x > 5 {
+    print(100);
+} senao {
+    print(0);
+}

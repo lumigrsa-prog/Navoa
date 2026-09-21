@@ -1,0 +1,7 @@
+funcao triplo(n) {
+    retornar n * 3;
+}
+
+seja valores = [5, 10, 15];
+seja resultado = triplo(valores[2]);
+imprimir resultado;

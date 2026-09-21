@@ -1,0 +1,3 @@
+definir a = true;
+definir b = false;
+imprimir a e b;

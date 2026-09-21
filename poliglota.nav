@@ -1,0 +1,15 @@
+escreve "=== DEMONSTRAÇÃO POLIGLOTA DO NAVOA ===";
+variable user = "Amigo";
+affiche "Bonjour, " + user;
+
+var contador = 1.0;
+mientras contador <= 2.0 {
+    print "--- Cycle ID: " + contador + " ---";
+    contador = contador + 1.0;
+}
+
+si contador == 3.0 {
+    escribe "¡Todo funcionando perfectamente en español!";
+} sinon {
+    ecrit "Erreur de boucle.";
+}

@@ -1,0 +1,8 @@
+[package]
+name = "navoa_analyzer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_ast = { path = "../navoa_ast" }
+navoa_vir = { path = "../navoa_vir" }

@@ -1,0 +1,4 @@
+seja var_pt = 10;
+
+escreve var_pt * 2;
+

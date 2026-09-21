@@ -1,0 +1,16 @@
+escreve "=== TESTE DE SCRIPT BILINGUE ===";
+let developer = "Mestre";
+print "Welcome, " + developer;
+
+var nivel = 10;
+if nivel > 5 {
+    escreve "[PT] Nível avançado detetado via instrução 'if' inglesa.";
+} else {
+    escreve "[PT] Nível inicial.";
+}
+
+se nivel == 10 {
+    print "[EN] Maximum level matched via 'se' portuguese keyword.";
+} senao {
+    print "[EN] Other level.";
+}

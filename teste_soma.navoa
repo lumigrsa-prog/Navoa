@@ -1,0 +1,3 @@
+definir contador = 1;
+definir contador = contador + 1;
+imprimir contador;

@@ -1,0 +1,65 @@
+// ======================================================
+// NAVOA STRESS TEST — TESTE DE LIMITES DA LINGUAGEM
+// ======================================================
+
+// 1. Variáveis, Tipos e Multilinguismo (PT, EN, FR, IT, DE)
+definir inteiro = 42;
+let flutuante = 3.14159;
+definire texto = "Navoa Engine v0.1";
+set ativo = verdadeiro;
+definieren desativado = faux;
+
+imprimir(texto);
+imprimir("----------------------------------------");
+
+// 2. Aritmética Complexa e Precedência de Operadores
+// (10 + 20 * 5) / 2 - (15 % não existe, usamos divisão/subtração) -> (10 + 100) / 2 - 5 = 50
+definir a = 10;
+definir b = 20;
+definir c = 5;
+definir resultado = (a + b * c) / 2 - 5;
+
+imprimir("Resultado do calculo (esperado 50):");
+stampa(resultado);
+
+// 3. Atribuição e Reutilização de Variáveis
+a = a + 5;
+imprimir("Variavel 'a' reatribuida (esperado 15):");
+print(a);
+
+imprimir("----------------------------------------");
+
+// 4. Teste de Condicionais e Operadores Lógicos (se / senao / if / else)
+se (resultado == 50 and ativo) {
+    imprimir("[OK] Teste Logico 1: Igualdade e AND funcionam.");
+} senao {
+    imprimir("[ERRO] Teste Logico 1 falhou.");
+}
+
+if (a > 20 ou flutuante <= 4.0) {
+    imprimir("[OK] Teste Logico 2: Comparacao e OR funcionam.");
+} sinon {
+    imprimir("[ERRO] Teste Logico 2 falhou.");
+}
+
+imprimir("----------------------------------------");
+
+// 5. Laço de Repetição (enquanto / while)
+definir contador = 1;
+definir limite = 4;
+definir acumulador = 0;
+
+imprimir("Iniciando laco enquanto (calculo de soma acumulada)...");
+
+enquanto (contador <= limite) {
+    acumulador = acumulador + contador;
+    imprimir("Passo:");
+    imprimir(contador);
+    contador = contador + 1;
+}
+
+imprimir("Soma acumulada final (1+2+3+4 = 10):");
+imprimir(acumulador);
+
+imprimir("----------------------------------------");
+imprimir("STRESS TEST CONCLUIDO COM SUCESSO!");

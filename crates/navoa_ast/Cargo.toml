@@ -1,0 +1,7 @@
+[package]
+name = "navoa_ast"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_lexer = { path = "../navoa_lexer" }

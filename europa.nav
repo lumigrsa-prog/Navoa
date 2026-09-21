@@ -1,0 +1,12 @@
+scrivi "=== TESTE ITALO-ALEMÃO ===";
+sei numero = 5.0;
+solange numero < 8.0 {
+    stampa "Wert: " + numero;
+    numero = numero + 1.0;
+}
+
+wenn numero == 8.0 {
+    schreibe "Alles klar auf der Alemão-Seite!";
+} altrimenti {
+    stampa "Errore.";
+}

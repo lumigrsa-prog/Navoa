@@ -1,0 +1,9 @@
+// Teste de Arrays no Vortex
+let numeros = [10, 20, 30, 40, 50];
+print(numeros);
+
+print(numeros[0]); // Deve imprimir 10
+print(numeros[2]); // Deve imprimir 30
+
+numeros[1] = 99;
+print(numeros); // Deve imprimir [10, 99, 30, 40, 50]

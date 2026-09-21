@@ -1,0 +1,10 @@
+variavel suspeito = ler("Nome do suspeito: ");
+variavel horas_rua = ler("Horas de permanência na baixa: ");
+imprimir "--- RELATÓRIO DE INVESTIGAÇÃO ---";
+imprimir "Suspeito sob escuta: " + suspeito;
+se horas_rua > 3 {
+    imprimir "Alerta: Movimento anómalo detetado nas sombras de Lisboa!";
+} else {
+    imprimir "Álibi verificado. O indivíduo manteve-se na rota habitual.";
+}
+

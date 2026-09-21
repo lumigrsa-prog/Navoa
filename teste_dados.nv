@@ -1,0 +1,13 @@
+seja linguagens = ["Python", "Rust", "Navoa"];
+seja config = {
+    "linguagem": "Navoa",
+    "versao": "0.1.0",
+    "autor": "Desenvolvedor"
+};
+
+seja primeira_lingua = linguagens[0];
+seja nome_lang = config["linguagem"];
+
+print(primeira_lingua);
+print(nome_lang);
+print(config["versao"]);

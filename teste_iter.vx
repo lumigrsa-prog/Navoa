@@ -1,0 +1,16 @@
+fn print_rows(rows, idx, total) {
+    if idx == total {
+        print("--- Fim da listagem ---")
+    } else {
+        let row = rows[idx]
+        print("Registo #", row[0], ":", row[1])
+        print_rows(rows, idx + 1, total)
+    }
+}
+
+let db = db_open("teste_db.vx")
+let rows = db_query(db, "SELECT id, name FROM items;")
+let total_rows = len(rows)
+
+print("Total de registos encontrados:", total_rows)
+print_rows(rows, 0, total_rows)

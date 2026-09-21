@@ -1,0 +1,3 @@
+definir role = "admin";
+imprimir role == "admin";
+imprimir role == "user";

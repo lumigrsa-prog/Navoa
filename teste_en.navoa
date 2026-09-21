@@ -1,0 +1,5 @@
+set nome = "Aurelian";
+set contador = 5;
+set contador = contador + 5;
+print nome;
+print contador;
