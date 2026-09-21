@@ -1,3 +1,8 @@
+pub mod ast;
+
+pub use ast::{Statement, Expr, BinaryOp};
+
+// (resto do código do parser, se houver)
 use navoa_lexer::{Language, Lexer, Token};
 use navoa_ast::{AstStmt, Expr};
 
