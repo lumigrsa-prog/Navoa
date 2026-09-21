@@ -7,7 +7,6 @@ use navoa_vm::VM;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-
     // Se for passado um ficheiro como argumento (ex: cargo run -p navoa_cli script.nav)
     if args.len() > 1 {
         let filename = &args[1];
@@ -37,15 +36,12 @@ fn main() {
     loop {
         print!("> ");
         io::stdout().flush().unwrap();
-
         let mut input = String::new();
         if io::stdin().read_line(&mut input).is_err() {
             println!("Erro ao ler entrada");
             break;
         }
-
         let trimmed = input.trim();
-
         if trimmed == "exit" || trimmed == "sair" {
             break;
         }
@@ -71,10 +67,8 @@ fn main() {
                 println!("Bloco vazio.");
                 continue;
             }
-
             last_block = block_lines.clone();
             let full_code = block_lines.concat();
-
             println!("\nO que deseja fazer com este bloco?");
             println!("1. Executar");
             println!("2. Gravar para ficheiro");
@@ -145,30 +139,18 @@ fn main() {
 fn traduzir_para_padrao(codigo: &str) -> String {
     let substituicoes = vec![
         // English
-        ("print", "imprimir"),
-        ("var", "variavel"),
-        ("if", "se"),
-        ("else", "senao"),
-        ("input", "ler"),
+        ("print", "imprimir"), ("var", "variavel"), ("if", "se"),
+        ("else", "senao"), ("input", "ler"),
         // Español
-        ("variable", "variavel"),
-        ("si", "se"),
-        ("sino", "senao"),
-        ("leer", "ler"),
+        ("variable", "variavel"), ("si", "se"),
+        ("sino", "senao"), ("leer", "ler"),
         // Français
-        ("afficher", "imprimir"),
-        ("sinon", "senao"),
-        ("lire", "ler"),
+        ("afficher", "imprimir"), ("sinon", "senao"), ("lire", "ler"),
         // Italiano
-        ("variabile", "variavel"),
-        ("stampa", "imprimir"),
-        ("altrimenti", "senao"),
-        ("leggi", "ler"),
+        ("variabile", "variavel"), ("stampa", "imprimir"),
+        ("altrimenti", "senao"), ("leggi", "ler"),
         // Deutsch
-        ("drucken", "imprimir"),
-        ("wenn", "se"),
-        ("sonst", "senao"),
-        ("eingabe", "ler"),
+        ("drucken", "imprimir"), ("wenn", "se"), ("sonst", "senao"), ("eingabe", "ler"),
     ];
 
     let mut linhas = Vec::new();
@@ -189,7 +171,6 @@ fn replace_whole_word(text: &str, target: &str, replacement: &str) -> String {
     let target_bytes = target.as_bytes();
     let target_len = target_bytes.len();
     let mut i = 0;
-
     while i < bytes.len() {
         let mut matches = false;
         if i + target_len <= bytes.len() {
@@ -222,13 +203,15 @@ fn execute_code(code: &str, vm: &mut VM) {
     let mut lexer = Lexer::new(code);
     match lexer.tokenize() {
         Ok(tokens) => {
-            let mut parser = Parser::new(tokens);
+            let mut parser = Parser::new(&tokens);
             match parser.parse() {
                 Ok(ast) => {
-                    let codegen = CodeGen::new();
-                    match codegen.compile(ast) {
-                        Ok(instructions) => {
-                            if let Err(e) = vm.interpret(instructions) {
+                    let mut codegen = CodeGen::new();
+                    // O CodeGen compila validando a AST (por referência)
+                    match codegen.compile(&ast) {
+                        Ok(_) => {
+                            // A Máquina Virtual consome diretamente o vetor de Statements
+                            if let Err(e) = vm.interpret(ast) {
                                 eprintln!("❌ Runtime Error: {}", e);
                             }
                         }

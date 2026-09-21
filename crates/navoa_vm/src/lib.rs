@@ -1,5 +1,4 @@
-use navoa_ast::{AstStmt, Expr};
-use navoa_lexer::Token;
+use navoa_parser::{Statement, Expr, BinaryOp};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -81,41 +80,68 @@ impl VM {
         }
     }
 
-    pub fn interpret(&mut self, statements: Vec<AstStmt>) -> Result<(), String> {
+    pub fn interpret(&mut self, statements: Vec<Statement>) -> Result<(), String> {
         for stmt in statements {
             self.execute_stmt(&stmt)?;
         }
         Ok(())
     }
 
-    fn execute_stmt(&mut self, stmt: &AstStmt) -> Result<(), String> {
+    fn execute_stmt(&mut self, stmt: &Statement) -> Result<(), String> {
         match stmt {
-            AstStmt::VarDecl { name, value } => {
+            Statement::VarDecl { name, value } => {
                 let val = self.evaluate_expr(value)?;
                 self.env.define(name.clone(), val);
             }
-            AstStmt::Print(expr) => {
+            Statement::Print(expr) => {
                 let val = self.evaluate_expr(expr)?;
                 println!("{}", val);
             }
-            AstStmt::Assign { name, value } => {
+            Statement::Assign { name, value } => {
                 let val = self.evaluate_expr(value)?;
                 self.env.assign(name, val)?;
             }
-            AstStmt::Block(stmts) => {
-                self.env.push_scope();
-                for s in stmts {
-                    if let Err(e) = self.execute_stmt(s) {
-                        self.env.pop_scope();
-                        return Err(e);
-                    }
-                }
-                self.env.pop_scope();
-            }
-            AstStmt::While { condition, body } => {
+            Statement::While { condition, body } => {
                 while self.is_truthy(&self.evaluate_expr(condition)?) {
-                    self.execute_stmt(body)?;
+                    self.env.push_scope(); // Novo scope para o bloco while
+                    for s in body {
+                        if let Err(e) = self.execute_stmt(s) {
+                            self.env.pop_scope();
+                            return Err(e);
+                        }
+                    }
+                    self.env.pop_scope();
                 }
+            }
+            Statement::If { condition, then_branch, else_branch } => {
+                if self.is_truthy(&self.evaluate_expr(condition)?) {
+                    self.env.push_scope();
+                    for s in then_branch {
+                        if let Err(e) = self.execute_stmt(s) {
+                            self.env.pop_scope();
+                            return Err(e);
+                        }
+                    }
+                    self.env.pop_scope();
+                } else if let Some(else_b) = else_branch {
+                    self.env.push_scope();
+                    for s in else_b {
+                        if let Err(e) = self.execute_stmt(s) {
+                            self.env.pop_scope();
+                            return Err(e);
+                        }
+                    }
+                    self.env.pop_scope();
+                }
+            }
+            Statement::Expr(expr) => {
+                self.evaluate_expr(expr)?;
+            }
+            Statement::FunctionDecl { .. } => {
+                return Err("Declaração de funções suportada pelo parser, mas VM precisa de implementação.".to_string());
+            }
+            Statement::Return(_) => {
+                return Err("Return suportado pelo parser, mas VM precisa de implementação.".to_string());
             }
         }
         Ok(())
@@ -126,34 +152,36 @@ impl VM {
             Expr::Number(n) => Ok(Value::Number(*n)),
             Expr::String(s) => Ok(Value::Str(s.clone())),
             Expr::Variable(name) => self.env.get(name),
-            Expr::Binary { left, operator, right } => {
+            Expr::Binary { left, op, right } => {
                 let l_val = self.evaluate_expr(left)?;
                 let r_val = self.evaluate_expr(right)?;
 
-                match (l_val, operator, r_val) {
-                    (Value::Number(l), Token::Plus, Value::Number(r)) => Ok(Value::Number(l + r)),
-                    (Value::Number(l), Token::Minus, Value::Number(r)) => Ok(Value::Number(l - r)),
-                    (Value::Number(l), Token::Star, Value::Number(r)) => Ok(Value::Number(l * r)),
-                    (Value::Number(l), Token::Slash, Value::Number(r)) => {
+                match (l_val, op, r_val) {
+                    // Operações Numéricas
+                    (Value::Number(l), BinaryOp::Add, Value::Number(r)) => Ok(Value::Number(l + r)),
+                    (Value::Number(l), BinaryOp::Sub, Value::Number(r)) => Ok(Value::Number(l - r)),
+                    (Value::Number(l), BinaryOp::Mul, Value::Number(r)) => Ok(Value::Number(l * r)),
+                    (Value::Number(l), BinaryOp::Div, Value::Number(r)) => {
                         if r == 0.0 {
                             Err("Divisão por zero.".to_string())
                         } else {
                             Ok(Value::Number(l / r))
                         }
                     }
-                    (Value::Str(l), Token::Plus, Value::Str(r)) => Ok(Value::Str(format!("{}{}", l, r))),
+                    // Concatenação de Strings
+                    (Value::Str(l), BinaryOp::Add, Value::Str(r)) => Ok(Value::Str(format!("{}{}", l, r))),
                     
-                    // Comparadores numéricos
-                    (Value::Number(l), Token::Greater, Value::Number(r)) => Ok(Value::Number(if l > r { 1.0 } else { 0.0 })),
-                    (Value::Number(l), Token::GreaterEqual, Value::Number(r)) => Ok(Value::Number(if l >= r { 1.0 } else { 0.0 })),
-                    (Value::Number(l), Token::Less, Value::Number(r)) => Ok(Value::Number(if l < r { 1.0 } else { 0.0 })),
-                    (Value::Number(l), Token::LessEqual, Value::Number(r)) => Ok(Value::Number(if l <= r { 1.0 } else { 0.0 })),
-                    (Value::Number(l), Token::EqualEqual, Value::Number(r)) => Ok(Value::Number(if l == r { 1.0 } else { 0.0 })),
-                    (Value::Number(l), Token::BangEqual, Value::Number(r)) => Ok(Value::Number(if l != r { 1.0 } else { 0.0 })),
+                    // Comparadores Numéricos (Retornam 1.0 para verdadeiro e 0.0 para falso)
+                    (Value::Number(l), BinaryOp::GreaterThan, Value::Number(r)) => Ok(Value::Number(if l > r { 1.0 } else { 0.0 })),
+                    (Value::Number(l), BinaryOp::LessThan, Value::Number(r)) => Ok(Value::Number(if l < r { 1.0 } else { 0.0 })),
+                    (Value::Number(l), BinaryOp::Equal, Value::Number(r)) => Ok(Value::Number(if l == r { 1.0 } else { 0.0 })),
 
-                    _ => Err(format!("Operação inválida entre tipos para o operador '{:?}'", operator)),
+                    _ => Err(format!("Operação inválida entre tipos para o operador '{:?}'", op)),
                 }
             }
+            Expr::Array(_) => Err("Arrays ainda não implementados na VM".to_string()),
+            Expr::Index { .. } => Err("Indexação ainda não implementada na VM".to_string()),
+            Expr::Call { .. } => Err("Chamadas de função ainda não implementadas na VM".to_string()),
         }
     }
 
