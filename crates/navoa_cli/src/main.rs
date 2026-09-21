@@ -1,6 +1,6 @@
 use std::fs;
 use std::io::{self, Write};
-use navoa_lexer::Lexer;
+use navoa_lexer::{Lexer, Language};
 use navoa_parser::Parser;
 use navoa_codegen::CodeGen;
 use navoa_vm::VM;
@@ -8,7 +8,6 @@ use navoa_vm::VM;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     
-    // Se for passado um ficheiro como argumento (ex: cargo run -p navoa_cli script.nav)
     if args.len() > 1 {
         let filename = &args[1];
         match fs::read_to_string(filename) {
@@ -23,12 +22,11 @@ fn main() {
         return;
     }
 
-    // Caso contrário, entra no modo REPL interativo com suporte a blocos e ficheiros
     println!("=== Navoa REPL ===");
     println!("Comandos úteis:");
     println!("  :bloco       -> Entra no modo de colagem de várias linhas (termina com . numa linha isolada)");
     println!("  :gravar <f>  -> Grava o último bloco num ficheiro");
-    println!("  :exec <f>    -> Executa um ficheiro .nav (traduzindo automaticamente se necessário)");
+    println!("  :exec <f>    -> Executa um ficheiro .nav");
     println!("  exit         -> Sai do programa\n");
 
     let mut vm = VM::new();
@@ -47,7 +45,6 @@ fn main() {
             break;
         }
 
-        // Modo de Bloco (Multilinhas)
         if trimmed == ":bloco" {
             println!("--- Modo de Bloco Ativo (Escreve '.' numa linha isolada para terminar) ---");
             let mut block_lines = Vec::new();
@@ -98,7 +95,6 @@ fn main() {
             continue;
         }
 
-        // Gravar último bloco
         if trimmed.starts_with(":gravar ") {
             let filename = trimmed.trim_start_matches(":gravar ").trim();
             if last_block.is_empty() {
@@ -113,7 +109,6 @@ fn main() {
             continue;
         }
 
-        // Executar ficheiro diretamente (com tradução automática multilingue)
         if trimmed.starts_with(":exec ") {
             let filename = trimmed.trim_start_matches(":exec ").trim();
             match fs::read_to_string(filename) {
@@ -128,7 +123,6 @@ fn main() {
             continue;
         }
 
-        // Execução normal linha a linha
         if !trimmed.is_empty() {
             let codigo_traduzido = traduzir_para_padrao(&input);
             execute_code(&codigo_traduzido, &mut vm);
@@ -136,7 +130,6 @@ fn main() {
     }
 }
 
-// Sistema de tradução automática entre as línguas para o padrão português
 fn traduzir_para_padrao(codigo: &str) -> String {
     let substituicoes = vec![
         ("print", "imprimir"), ("var", "variavel"), ("if", "se"),
@@ -195,10 +188,11 @@ fn is_identifier_char(c: u8) -> bool {
 }
 
 fn execute_code(code: &str, vm: &mut VM) {
-    let mut lexer = Lexer::new(code);
+    // Passa os 2 argumentos exigidos pelo Lexer (código e a linguagem padrão Language::Pt)
+    let mut lexer = Lexer::new(code, Language::Pt);
     
-    // Utiliza o método .lex() (ou ajusta para o nome exato do método de varredura do teu lexer se diferir)
-    match lexer.lex() {
+    // Utiliza o método correto .tokenize()
+    match lexer.tokenize() {
         Ok(tokens) => {
             let mut parser = Parser::new(tokens.as_slice());
             match parser.parse() {
