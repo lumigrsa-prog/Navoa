@@ -1,6 +1,5 @@
 // Importa as estruturas do parser (ajusta o caminho se necessário, ex: navoa_parser)
-use crate::parser::{Statement, Expr, BinaryOp};
-
+use navoa_parser::{Statement, Expr, BinaryOp};
 pub struct CodeGen {
     // Podes adicionar aqui os campos para bytecode ou instruções geradas
 }
