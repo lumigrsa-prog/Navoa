@@ -17,18 +17,20 @@ impl CodeGen {
         for statement in statements {
             match statement {
                 Statement::Print(_expr) => {
-                    // Lógica de compilação para Print
+                    // Lógica para compilar instrução de impressão
                 }
                 Statement::Expr(_expr) => {
-                    // Lógica de compilação para Expr
+                    // Lógica para compilar expressão isolada
                 }
                 Statement::If { condition: _condition, then_branch: _then_branch, else_branch: _else_branch } => {
-                    // Lógica de compilação para If
+                    // Lógica para compilar estrutura condicional se/senão
                 }
                 Statement::While { condition: _condition, body: _body } => {
-                    // Lógica de compilação para While
+                    // Lógica para compilar ciclo while
                 }
-                _ => {}
+                _ => {
+                    // Tratamento genérico para outras instruções do AST
+                }
             }
         }
 

@@ -188,10 +188,8 @@ fn is_identifier_char(c: u8) -> bool {
 }
 
 fn execute_code(code: &str, vm: &mut VM) {
-    // Passa os 2 argumentos exigidos pelo Lexer (código e a linguagem padrão Language::Pt)
     let mut lexer = Lexer::new(code, Language::Pt);
     
-    // Utiliza o método correto .tokenize()
     match lexer.tokenize() {
         Ok(tokens) => {
             let mut parser = Parser::new(tokens.as_slice());
