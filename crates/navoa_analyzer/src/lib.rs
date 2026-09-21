@@ -1,13 +1,13 @@
-use navoa_ast::AstStmt;
+use navoa_vir::VirStatement;
 
-pub struct Analyzer {}
+pub struct Analyzer;
 
 impl Analyzer {
     pub fn new() -> Self {
-        Analyzer {}
+        Self
     }
 
-    pub fn analyze(&mut self, ast: Vec<AstStmt>) -> Result<Vec<AstStmt>, String> {
-        Ok(ast)
+    pub fn analyze(&mut self, statements: Vec<VirStatement>) -> Result<Vec<VirStatement>, String> {
+        Ok(statements)
     }
 }
