@@ -138,18 +138,13 @@ fn main() {
 // Sistema de tradução automática entre as 6 línguas para o padrão português
 fn traduzir_para_padrao(codigo: &str) -> String {
     let substituicoes = vec![
-        // English
         ("print", "imprimir"), ("var", "variavel"), ("if", "se"),
         ("else", "senao"), ("input", "ler"),
-        // Español
         ("variable", "variavel"), ("si", "se"),
         ("sino", "senao"), ("leer", "ler"),
-        // Français
         ("afficher", "imprimir"), ("sinon", "senao"), ("lire", "ler"),
-        // Italiano
         ("variabile", "variavel"), ("stampa", "imprimir"),
         ("altrimenti", "senao"), ("leggi", "ler"),
-        // Deutsch
         ("drucken", "imprimir"), ("wenn", "se"), ("sonst", "senao"), ("eingabe", "ler"),
     ];
 
@@ -164,7 +159,6 @@ fn traduzir_para_padrao(codigo: &str) -> String {
     linhas.join("\n")
 }
 
-// Garante que só substitui palavras inteiras (evita estragar nomes de variáveis)
 fn replace_whole_word(text: &str, target: &str, replacement: &str) -> String {
     let mut result = String::new();
     let bytes = text.as_bytes();
@@ -201,16 +195,19 @@ fn is_identifier_char(c: u8) -> bool {
 
 fn execute_code(code: &str, vm: &mut VM) {
     let mut lexer = Lexer::new(code);
+    
     match lexer.tokenize() {
         Ok(tokens) => {
-            let mut parser = Parser::new(&tokens);
+            // O uso de .as_slice() obriga o Rust a reconhecer que 'tokens' é um Vec
+            // Isso destrói o erro E0277 de inferência
+            let mut parser = Parser::new(tokens.as_slice());
             match parser.parse() {
                 Ok(ast) => {
                     let mut codegen = CodeGen::new();
-                    // O CodeGen compila validando a AST (por referência)
-                    match codegen.compile(&ast) {
+                    // O mesmo princípio aplica-se à AST
+                    match codegen.compile(ast.as_slice()) {
                         Ok(_) => {
-                            // A Máquina Virtual consome diretamente o vetor de Statements
+                            // A VM consome o vetor nativamente
                             if let Err(e) = vm.interpret(ast) {
                                 eprintln!("❌ Runtime Error: {}", e);
                             }
