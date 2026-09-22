@@ -1,25 +1,48 @@
-// Acede diretamente ao Statement sem tentar importar Expr ou BinaryOp inexistentes
-pub use navoa_ast::Statement; 
-
-use navoa_lexer::Token;
-
-pub struct Parser<'a> {
-    tokens: &'a [Token],
-    position: usize,
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Language {
+    Pt,
+    Es,
+    Fr,
+    It,
+    De,
+    En,
 }
 
-impl<'a> Parser<'a> {
-    pub fn new(tokens: &'a [Token]) -> Self {
-        Self { tokens, position: 0 }
+#[derive(Debug, Clone, PartialEq)]
+pub enum Token {
+    Imprimir,
+    Variavel,
+    Se,
+    Senao,
+    Ler,
+    Identificador(String),
+    Numero(f64),
+    Texto(String),
+    Igual,
+    Mais,
+    Menos,
+    Multiplicar,
+    Dividir,
+    ParentesisEsquerdo,
+    ParentesisDireito,
+    FimInstrucao,
+}
+
+pub struct Lexer<'a> {
+    _input: &'a str,
+    _language: Language,
+}
+
+impl<'a> Lexer<'a> {
+    pub fn new(input: &'a str, language: Language) -> Self {
+        Self {
+            _input: input,
+            _language: language,
+        }
     }
 
-    #[allow(dead_code)]
-    fn peek(&self) -> Option<&Token> {
-        self.tokens.get(self.position)
-    }
-
-    pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
-        let statements = Vec::new();
-        Ok(statements)
+    pub fn tokenize(&mut self) -> Result<Vec<Token>, String> {
+        let tokens = Vec::new();
+        Ok(tokens)
     }
 }
