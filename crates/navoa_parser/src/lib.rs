@@ -1,7 +1,23 @@
-pub mod ast;
-pub mod parser;
+pub use navoa_ast::Statement;
+use navoa_lexer::Token;
 
-// Re-exporta os tipos principais da AST para todo o workspace do Navoa
-pub use ast::{Statement, Expr, BinaryOp};
-pub use parser::*;
+pub struct Parser<'a> {
+    tokens: &'a [Token],
+    position: usize,
+}
 
+impl<'a> Parser<'a> {
+    pub fn new(tokens: &'a [Token]) -> Self {
+        Self { tokens, position: 0 }
+    }
+
+    #[allow(dead_code)]
+    fn peek(&self) -> Option<&Token> {
+        self.tokens.get(self.position)
+    }
+
+    pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
+        let statements = Vec::new();
+        Ok(statements)
+    }
+}
