@@ -1,37 +1,32 @@
-use navoa_parser::Statement;
+use navoa_ast::{Expr, Statement};
 
-pub struct CodeGen {
-    instructions: Vec<u8>,
-}
+pub struct Codegen;
 
-impl CodeGen {
+impl Codegen {
     pub fn new() -> Self {
-        Self {
-            instructions: Vec::new(),
-        }
+        Codegen
     }
 
-    pub fn compile(&mut self, statements: &[Statement]) -> Result<Vec<u8>, String> {
-        self.instructions.clear();
-
-        for statement in statements {
-            match statement {
-                Statement::Print(_expr) => {
-                    // Lógica de compilação para Print
+    pub fn gerar(&self, statements: &[Statement]) -> String {
+        let mut codigo = String::new();
+        for stmt in statements {
+            match stmt {
+                Statement::Imprimir(expr) => {
+                    codigo.push_str(&format!("print({});\n", self.gerar_expr(expr)));
                 }
-                Statement::Expr(_expr) => {
-                    // Lógica de compilação para Expr
+                Statement::Atribuir(nome, expr) => {
+                    codigo.push_str(&format!("let {} = {};\n", nome, self.gerar_expr(expr)));
                 }
-                Statement::If { condition: _condition, then_branch: _then_branch, else_branch: _else_branch } => {
-                    // Lógica de compilação para If
-                }
-                Statement::While { condition: _condition, body: _body } => {
-                    // Lógica de compilação para While
-                }
-                _ => {}
             }
         }
+        codigo
+    }
 
-        Ok(self.instructions.clone())
+    fn gerar_expr(&self, expr: &Expr) -> String {
+        match expr {
+            Expr::Numero(n) => n.to_string(),
+            Expr::Texto(t) => format!("\"{}\"", t),
+            Expr::Identificador(id) => id.clone(),
+        }
     }
 }

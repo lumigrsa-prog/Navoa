@@ -4,6 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-navoa_parser = { path = "../navoa_parser" }
-navoa_vir = { path = "../navoa_vir" }
-navoa_bytecode = { path = "../navoa_bytecode" }
+navoa_ast = { path = "../navoa_ast" }
