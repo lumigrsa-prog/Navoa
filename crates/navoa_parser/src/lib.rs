@@ -1,4 +1,4 @@
-use navoa_ast::{Expressao, Instrucao, Programa};
+use navoa_ast::{Expressao, Instrucao, Operador, Programa};
 use navoa_lexer::{Lexer, Token};
 
 pub struct Parser<'a> {
@@ -79,7 +79,7 @@ impl<'a> Parser<'a> {
                     if self.token_atual != Token::AbreParenteses {
                         return None;
                     }
-                    self.avançar(); // Consome '('
+                    self.avançar();
 
                     let mut parametros = Vec::new();
                     while self.token_atual != Token::FechaParenteses && self.token_atual != Token::EOF {
@@ -95,7 +95,7 @@ impl<'a> Parser<'a> {
                     }
 
                     if self.token_atual == Token::FechaParenteses {
-                        self.avançar(); // Consome ')'
+                        self.avançar();
                     }
 
                     let corpo = self.parse_bloco()?;
@@ -127,7 +127,7 @@ impl<'a> Parser<'a> {
         if self.token_atual != Token::AbreChave {
             return None;
         }
-        self.avançar(); // Consome '{'
+        self.avançar();
 
         let mut instrucoes = Vec::new();
         while self.token_atual != Token::FechaChave && self.token_atual != Token::EOF {
@@ -139,13 +139,103 @@ impl<'a> Parser<'a> {
         }
 
         if self.token_atual == Token::FechaChave {
-            self.avançar(); // Consome '}'
+            self.avançar();
         }
 
         Some(instrucoes)
     }
 
-    fn parse_expressao(&mut self) -> Option<Expressao> {
+    pub fn parse_expressao(&mut self) -> Option<Expressao> {
+        self.parse_igualdade()
+    }
+
+    fn parse_igualdade(&mut self) -> Option<Expressao> {
+        let mut expr = self.parse_comparacao()?;
+
+        while matches!(self.token_atual, Token::IgualIgual | Token::Diferente) {
+            let op = match self.token_atual {
+                Token::IgualIgual => Operador::Igual,
+                Token::Diferente => Operador::Diferente,
+                _ => unreachable!(),
+            };
+            self.avançar();
+            let direita = self.parse_comparacao()?;
+            expr = Expressao::Binaria {
+                esquerda: Box::new(expr),
+                operacao: op,
+                direita: Box::new(direita),
+            };
+        }
+
+        Some(expr)
+    }
+
+    fn parse_comparacao(&mut self) -> Option<Expressao> {
+        let mut expr = self.parse_adicao()?;
+
+        while matches!(self.token_atual, Token::Menor | Token::Maior | Token::MenorIgual | Token::MaiorIgual) {
+            let op = match self.token_atual {
+                Token::Menor => Operador::Menor,
+                Token::Maior => Operador::Maior,
+                Token::MenorIgual => Operador::MenorIgual,
+                Token::MaiorIgual => Operador::MaiorIgual,
+                _ => unreachable!(),
+            };
+            self.avançar();
+            let direita = self.parse_adicao()?;
+            expr = Expressao::Binaria {
+                esquerda: Box::new(expr),
+                operacao: op,
+                direita: Box::new(direita),
+            };
+        }
+
+        Some(expr)
+    }
+
+    fn parse_adicao(&mut self) -> Option<Expressao> {
+        let mut expr = self.parse_multiplicacao()?;
+
+        while matches!(self.token_atual, Token::Mais | Token::Menos) {
+            let op = match self.token_atual {
+                Token::Mais => Operador::Somar,
+                Token::Menos => Operador::Subtrair,
+                _ => unreachable!(),
+            };
+            self.avançar();
+            let direita = self.parse_multiplicacao()?;
+            expr = Expressao::Binaria {
+                esquerda: Box::new(expr),
+                operacao: op,
+                direita: Box::new(direita),
+            };
+        }
+
+        Some(expr)
+    }
+
+    fn parse_multiplicacao(&mut self) -> Option<Expressao> {
+        let mut expr = self.parse_primaria()?;
+
+        while matches!(self.token_atual, Token::Asterisco | Token::Barra) {
+            let op = match self.token_atual {
+                Token::Asterisco => Operador::Multiplicar,
+                Token::Barra => Operador::Dividir,
+                _ => unreachable!(),
+            };
+            self.avançar();
+            let direita = self.parse_primaria()?;
+            expr = Expressao::Binaria {
+                esquerda: Box::new(expr),
+                operacao: op,
+                direita: Box::new(direita),
+            };
+        }
+
+        Some(expr)
+    }
+
+    fn parse_primaria(&mut self) -> Option<Expressao> {
         match self.token_atual.clone() {
             Token::Numero(val) => {
                 self.avançar();
@@ -163,10 +253,18 @@ impl<'a> Parser<'a> {
                 self.avançar();
                 Some(Expressao::Booleano(false))
             }
+            Token::AbreParenteses => {
+                self.avançar();
+                let expr = self.parse_expressao()?;
+                if self.token_atual == Token::FechaParenteses {
+                    self.avançar();
+                }
+                Some(expr)
+            }
             Token::Identificador(nome) => {
                 self.avançar();
                 if self.token_atual == Token::AbreParenteses {
-                    self.avançar(); // Consome '('
+                    self.avançar();
                     let mut argumentos = Vec::new();
                     while self.token_atual != Token::FechaParenteses && self.token_atual != Token::EOF {
                         if let Some(arg) = self.parse_expressao() {
@@ -179,7 +277,7 @@ impl<'a> Parser<'a> {
                         }
                     }
                     if self.token_atual == Token::FechaParenteses {
-                        self.avançar(); // Consome ')'
+                        self.avançar();
                     }
                     Some(Expressao::Chamada { nome, argumentos })
                 } else {

@@ -1,4 +1,18 @@
 #[derive(Debug, PartialEq, Clone)]
+pub enum Operador {
+    Somar,
+    Subtrair,
+    Multiplicar,
+    Dividir,
+    Igual,
+    Diferente,
+    Menor,
+    Maior,
+    MenorIgual,
+    MaiorIgual,
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum Expressao {
     Numero(f64),
     Texto(String),
@@ -7,6 +21,11 @@ pub enum Expressao {
     Chamada {
         nome: String,
         argumentos: Vec<Expressao>,
+    },
+    Binaria {
+        esquerda: Box<Expressao>,
+        operacao: Operador,
+        direita: Box<Expressao>,
     },
 }
 

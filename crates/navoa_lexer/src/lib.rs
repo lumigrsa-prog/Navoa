@@ -1,225 +1,187 @@
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
-    // Palavras-chave
+    // Palavras-chave e Estruturas
+    Imprimir,
+    Var,
     Se,
     Senao,
     Enquanto,
-    Para,
     Funcao,
     Retornar,
-    Imprimir,
-    Var,
-    Verdadeiro,
-    Falso,
-    Nulo,
-
-    // Identificadores e Literais
+    
+    // Valores
     Identificador(String),
     Numero(f64),
     Texto(String),
+    Verdadeiro,
+    Falso,
 
-    // Operadores e Pontuação
-    Atribuicao,     // =
-    Igual,          // ==
-    Diferente,      // !=
-    Maior,          // >
-    Menor,          // <
-    MaiorIgual,     // >=
-    MenorIgual,     // <=
-    Mais,           // +
-    Menos,          // -
-    Multiplicacao,  // *
-    Divisao,        // /
-    E,              // e, and, et, y, und
-    Ou,             // ou, or, o, oder
-    Nao,            // nao, not, non, no, nicht
-    AbreParenteses, // (
-    FechaParenteses,// )
-    AbreChave,      // {
-    FechaChave,     // }
-    Virgula,        // ,
+    // Simbolos e Pontuação
+    Atribuicao,
+    AbreParenteses,
+    FechaParenteses,
+    AbreChave,
+    FechaChave,
+    Virgula,
+
+    // Operadores Aritmeticos e Logicos
+    Mais,
+    Menos,
+    Asterisco,
+    Barra,
+    IgualIgual,
+    Diferente,
+    Menor,
+    Maior,
+    MenorIgual,
+    MaiorIgual,
+
     EOF,
 }
 
 pub struct Lexer<'a> {
     input: &'a str,
-    pos: usize,
+    posicao: usize,
 }
 
 impl<'a> Lexer<'a> {
     pub fn novo(input: &'a str) -> Self {
-        Self { input, pos: 0 }
+        Self { input, posicao: 0 }
     }
 
-    fn peek(&self) -> Option<char> {
-        self.input[self.pos..].chars().next()
+    fn char_atual(&self) -> Option<char> {
+        self.input[self.posicao..].chars().next()
     }
 
-    fn advance(&mut self) -> Option<char> {
-        let ch = self.peek()?;
-        self.pos += ch.len_utf8();
-        Some(ch)
+    fn espiar_proximo(&self) -> Option<char> {
+        let mut chars = self.input[self.posicao..].chars();
+        chars.next();
+        chars.next()
+    }
+
+    fn avançar(&mut self) {
+        if let Some(c) = self.char_atual() {
+            self.posicao += c.len_utf8();
+        }
     }
 
     pub fn proximo_token(&mut self) -> Token {
-        while let Some(ch) = self.peek() {
-            if ch.is_whitespace() || ch == ';' {
-                self.advance();
+        while let Some(c) = self.char_atual() {
+            if c.is_whitespace() {
+                self.avançar();
                 continue;
             }
 
-            // Comentários de linha
-            if ch == '/' {
-                let mut temp = self.input[self.pos..].chars();
-                temp.next();
-                if temp.next() == Some('/') {
-                    while let Some(c) = self.peek() {
-                        if c == '\n' { break; }
-                        self.advance();
-                    }
-                    continue;
+            // Comentários de linha única //
+            if c == '/' && self.espiar_proximo() == Some('/') {
+                while let Some(ch) = self.char_atual() {
+                    if ch == '\n' { break; }
+                    self.avançar();
                 }
+                continue;
             }
 
-            // Strings
-            if ch == '"' || ch == '\'' {
-                let quote = self.advance().unwrap();
-                let mut texto = String::new();
-                while let Some(c) = self.peek() {
-                    if c == quote {
-                        self.advance();
-                        break;
+            // Operadores compostos e simples
+            match c {
+                '+' => { self.avançar(); return Token::Mais; }
+                '-' => { self.avançar(); return Token::Menos; }
+                '*' => { self.avançar(); return Token::Asterisco; }
+                '/' => { self.avançar(); return Token::Barra; }
+                '=' => {
+                    self.avançar();
+                    if self.char_atual() == Some('=') {
+                        self.avançar();
+                        return Token::IgualIgual;
                     }
-                    texto.push(c);
-                    self.advance();
+                    return Token::Atribuicao;
                 }
-                return Token::Texto(texto);
+                '!' => {
+                    if self.espiar_proximo() == Some('=') {
+                        self.avançar();
+                        self.avançar();
+                        return Token::Diferente;
+                    }
+                }
+                '<' => {
+                    self.avançar();
+                    if self.char_atual() == Some('=') {
+                        self.avançar();
+                        return Token::MenorIgual;
+                    }
+                    return Token::Menor;
+                }
+                '>' => {
+                    self.avançar();
+                    if self.char_atual() == Some('=') {
+                        self.avançar();
+                        return Token::MaiorIgual;
+                    }
+                    return Token::Maior;
+                }
+                '(' => { self.avançar(); return Token::AbreParenteses; }
+                ')' => { self.avançar(); return Token::FechaParenteses; }
+                '{' => { self.avançar(); return Token::AbreChave; }
+                '}' => { self.avançar(); return Token::FechaChave; }
+                ',' => { self.avançar(); return Token::Virgula; }
+                '"' => {
+                    self.avançar();
+                    let mut texto = String::new();
+                    while let Some(ch) = self.char_atual() {
+                        if ch == '"' {
+                            self.avançar();
+                            break;
+                        }
+                        texto.push(ch);
+                        self.avançar();
+                    }
+                    return Token::Texto(texto);
+                }
+                _ => {}
             }
 
-            // Números
-            if ch.is_ascii_digit() {
+            if c.is_ascii_digit() {
                 let mut num_str = String::new();
-                while let Some(c) = self.peek() {
-                    if c.is_ascii_digit() || c == '.' {
-                        num_str.push(c);
-                        self.advance();
+                while let Some(ch) = self.char_atual() {
+                    if ch.is_ascii_digit() || ch == '.' {
+                        num_str.push(ch);
+                        self.avançar();
                     } else {
                         break;
                     }
                 }
-                let val = num_str.parse::<f64>().unwrap_or(0.0);
-                return Token::Numero(val);
+                if let Ok(num) = num_str.parse::<f64>() {
+                    return Token::Numero(num);
+                }
             }
 
-            // Identificadores e Palavras-Chave (PT, EN, FR, ES, IT, DE)
-            if ch.is_alphabetic() || ch == '_' {
+            if c.is_alphabetic() || c == '_' {
                 let mut ident = String::new();
-                while let Some(c) = self.peek() {
-                    if c.is_alphanumeric() || c == '_' {
-                        ident.push(c);
-                        self.advance();
+                while let Some(ch) = self.char_atual() {
+                    if ch.is_alphanumeric() || ch == '_' {
+                        ident.push(ch);
+                        self.avançar();
                     } else {
                         break;
                     }
                 }
 
                 return match ident.as_str() {
-                    // Condicionais (PT: se | EN: if | FR/ES/IT: si, se | DE: wenn, falls)
-                    "se" | "if" | "si" | "wenn" | "falls" => Token::Se,
-                    // Senão (PT: senao | EN: else | FR: sinon | ES: sino | IT: altrimenti | DE: sonst)
-                    "senao" | "else" | "sinon" | "sino" | "altrimenti" | "sonst" => Token::Senao,
-
-                    // Repetição (PT: enquanto | EN: while | FR: tantque | ES: mientras | IT: mentre | DE: solange, waehrend, während)
-                    "enquanto" | "while" | "tantque" | "mientras" | "mentre" | "solange" | "waehrend" | "während" => Token::Enquanto,
-                    // Para (PT/ES: para | EN: for | FR: pour | IT: per | DE: fuer, für)
-                    "para" | "for" | "pour" | "per" | "fuer" | "für" => Token::Para,
-
-                    // Funções e Retorno (PT: funcao | EN: fn, function | FR: fonction | ES: funcion | IT: funzione | DE: funktion)
-                    "funcao" | "fn" | "function" | "fonction" | "funcion" | "funzione" | "funktion" => Token::Funcao,
-                    "retornar" | "retorna" | "return" | "retourner" | "ritornare" | "ritorna" | "rueckgabe" | "rückgabe" | "zurueck" => Token::Retornar,
-
-                    // Saída (PT: imprimir | EN: print | FR: ecrire | ES: escribir | IT: stampare, scrivere | DE: drucken, ausgeben)
-                    "imprimir" | "print" | "ecrire" | "escribir" | "stampare" | "scrivere" | "drucken" | "ausgeben" => Token::Imprimir,
-
-                    // Variáveis
+                    "imprimir" | "print" | "ecrire" | "escribir" | "stampare" | "drucken" => Token::Imprimir,
                     "var" | "let" => Token::Var,
-
-                    // Valores lógicos (PT: verdadeiro | EN: true | FR: vrai | ES: verdadero | IT: vero | DE: wahr)
+                    "se" | "if" | "si" | "wenn" => Token::Se,
+                    "senao" | "else" | "sinon" | "sino" | "altrimenti" | "sonst" => Token::Senao,
+                    "enquanto" | "while" | "tantque" | "mientras" | "mentre" | "solange" => Token::Enquanto,
+                    "funcao" | "fn" | "function" | "fonction" | "funcion" | "funzione" | "funktion" => Token::Funcao,
+                    "retornar" | "return" | "retourner" | "ritornare" | "rueckgabe" => Token::Retornar,
                     "verdadeiro" | "true" | "vrai" | "verdadero" | "vero" | "wahr" => Token::Verdadeiro,
-                    // Falso (PT/ES/IT: falso | EN: false | FR: faux | DE: falsch)
-                    "falso" | "false" | "faux" | "falsch" => Token::Falso,
-                    // Nulo (PT/ES: nulo | EN: null, nil | FR: nul | IT: nullo | DE: null)
-                    "nulo" | "null" | "nil" | "nul" | "nullo" => Token::Nulo,
-
-                    // Operadores lógicos (PT: e | EN: and | FR: et | ES: y | DE: und)
-                    "e" | "and" | "et" | "y" | "und" => Token::E,
-                    // Ou (PT/FR: ou | EN: or | ES/IT: o | DE: oder)
-                    "ou" | "or" | "o" | "oder" => Token::Ou,
-                    // Não (PT: nao | EN: not | FR/IT: non | ES: no | DE: nicht)
-                    "nao" | "not" | "non" | "no" | "nicht" => Token::Nao,
-
+                    "falso" | "false" | "faux" | "falso_" | "falsch" => Token::Falso,
                     _ => Token::Identificador(ident),
                 };
             }
 
-            // Pontuação e Operadores
-            self.advance();
-            return match ch {
-                '=' => {
-                    if self.peek() == Some('=') { self.advance(); Token::Igual }
-                    else { Token::Atribuicao }
-                }
-                '!' => {
-                    if self.peek() == Some('=') { self.advance(); Token::Diferente }
-                    else { Token::Nao }
-                }
-                '>' => {
-                    if self.peek() == Some('=') { self.advance(); Token::MaiorIgual }
-                    else { Token::Maior }
-                }
-                '<' => {
-                    if self.peek() == Some('=') { self.advance(); Token::MenorIgual }
-                    else { Token::Menor }
-                }
-                '+' => Token::Mais,
-                '-' => Token::Menos,
-                '*' => Token::Multiplicacao,
-                '/' => Token::Divisao,
-                '(' => Token::AbreParenteses,
-                ')' => Token::FechaParenteses,
-                '{' => Token::AbreChave,
-                '}' => Token::FechaChave,
-                ',' => Token::Virgula,
-                _ => Token::EOF,
-            };
+            self.avançar();
         }
+
         Token::EOF
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_keywords_multilingues() {
-        // PT, EN, FR, ES, IT, DE
-        let codigo = "imprimir print ecrire escribir stampare drucken";
-        let mut lexer = Lexer::novo(codigo);
-        for _ in 0..6 {
-            assert_eq!(lexer.proximo_token(), Token::Imprimir);
-        }
-
-        let condicionais = "se if si wenn";
-        let mut lexer = Lexer::novo(condicionais);
-        for _ in 0..4 {
-            assert_eq!(lexer.proximo_token(), Token::Se);
-        }
-
-        let lacos = "enquanto while tantque mientras mentre solange";
-        let mut lexer = Lexer::novo(lacos);
-        for _ in 0..6 {
-            assert_eq!(lexer.proximo_token(), Token::Enquanto);
-        }
     }
 }

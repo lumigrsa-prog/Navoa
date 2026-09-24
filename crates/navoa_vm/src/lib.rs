@@ -1,4 +1,4 @@
-use navoa_ast::{Expressao, Instrucao, Programa};
+use navoa_ast::{Expressao, Instrucao, Operador, Programa};
 use std::collections::HashMap;
 
 #[derive(Clone)]
@@ -108,6 +108,60 @@ impl VM {
                     }
                 }
                 "0".to_string()
+            }
+            Expressao::Binaria { esquerda, operacao, direita } => {
+                let val_esq = self.avaliar_expressao(esquerda);
+                let val_dir = self.avaliar_expressao(direita);
+
+                let num_esq = val_esq.parse::<f64>();
+                let num_dir = val_dir.parse::<f64>();
+
+                match operacao {
+                    Operador::Somar => {
+                        if let (Ok(a), Ok(b)) = (num_esq, num_dir) {
+                            (a + b).to_string()
+                        } else {
+                            format!("{}{}", val_esq, val_dir)
+                        }
+                    }
+                    Operador::Subtrair => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(0.0);
+                        (a - b).to_string()
+                    }
+                    Operador::Multiplicar => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(0.0);
+                        (a * b).to_string()
+                    }
+                    Operador::Dividir => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(1.0);
+                        if b == 0.0 { "0".to_string() } else { (a / b).to_string() }
+                    }
+                    Operador::Igual => (val_esq == val_dir).to_string(),
+                    Operador::Diferente => (val_esq != val_dir).to_string(),
+                    Operador::Menor => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(0.0);
+                        (a < b).to_string()
+                    }
+                    Operador::Maior => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(0.0);
+                        (a > b).to_string()
+                    }
+                    Operador::MenorIgual => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(0.0);
+                        (a <= b).to_string()
+                    }
+                    Operador::MaiorIgual => {
+                        let a = num_esq.unwrap_or(0.0);
+                        let b = num_dir.unwrap_or(0.0);
+                        (a >= b).to_string()
+                    }
+                }
             }
             Expressao::Chamada { nome, argumentos } => {
                 let args_avaliados: Vec<String> = argumentos

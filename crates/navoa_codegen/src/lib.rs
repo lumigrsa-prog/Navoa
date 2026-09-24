@@ -1,4 +1,4 @@
-use navoa_ast::{Expressao, Instrucao, Programa};
+use navoa_ast::{Expressao, Instrucao, Operador, Programa};
 
 pub struct Codegen;
 
@@ -70,6 +70,23 @@ impl Codegen {
             Expressao::Texto(t) => format!("\"{}\"", t),
             Expressao::Variavel(nome) => nome.clone(),
             Expressao::Booleano(b) => b.to_string(),
+            Expressao::Binaria { esquerda, operacao, direita } => {
+                let esq = Self::gerar_expressao_js(esquerda);
+                let dir = Self::gerar_expressao_js(direita);
+                let op = match operacao {
+                    Operador::Somar => "+",
+                    Operador::Subtrair => "-",
+                    Operador::Multiplicar => "*",
+                    Operador::Dividir => "/",
+                    Operador::Igual => "===",
+                    Operador::Diferente => "!==",
+                    Operador::Menor => "<",
+                    Operador::Maior => ">",
+                    Operador::MenorIgual => "<=",
+                    Operador::MaiorIgual => ">=",
+                };
+                format!("({} {} {})", esq, op, dir)
+            }
             Expressao::Chamada { nome, argumentos } => {
                 let args: Vec<String> = argumentos.iter().map(Self::gerar_expressao_js).collect();
                 format!("{}({})", nome, args.join(", "))

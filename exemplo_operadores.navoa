@@ -1,0 +1,12 @@
+funcao calcular(a, b) {
+    retornar a * 2 + b / 2
+}
+
+var resultado = calcular(10, 20)
+imprimir resultado
+
+se resultado > 25 {
+    imprimir "Resultado maior que 25"
+} senao {
+    imprimir "Resultado menor ou igual a 25"
+}
