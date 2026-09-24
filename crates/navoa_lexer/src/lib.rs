@@ -63,7 +63,8 @@ impl<'a> Lexer<'a> {
 
     pub fn proximo_token(&mut self) -> Token {
         while let Some(ch) = self.peek() {
-            if ch.is_whitespace() {
+            // Ignorar espaços e ponto e vírgula
+            if ch.is_whitespace() || ch == ';' {
                 self.advance();
                 continue;
             }
@@ -124,39 +125,25 @@ impl<'a> Lexer<'a> {
                 }
 
                 return match ident.as_str() {
-                    // Condicionais
                     "se" | "if" | "si" => Token::Se,
                     "senao" | "else" | "sinon" => Token::Senao,
-
-                    // Repetição
                     "enquanto" | "while" | "tantque" | "mientras" => Token::Enquanto,
                     "para" | "for" | "pour" => Token::Para,
-
-                    // Funções e Retorno
                     "funcao" | "fn" | "function" | "fonction" => Token::Funcao,
                     "retornar" | "retorna" | "return" | "retourner" => Token::Retornar,
-
-                    // Saída
                     "imprimir" | "print" | "ecrire" | "escribir" => Token::Imprimir,
-
-                    // Variáveis
                     "var" | "let" => Token::Var,
-
-                    // Valores lógicos
                     "verdadeiro" | "true" | "vrai" => Token::Verdadeiro,
                     "falso" | "false" | "faux" => Token::Falso,
                     "nulo" | "null" | "nil" => Token::Nulo,
-
-                    // Operadores lógicos por extenso
                     "e" | "and" | "et" => Token::E,
                     "ou" | "or" => Token::Ou,
                     "nao" | "not" | "non" => Token::Nao,
-
                     _ => Token::Identificador(ident),
                 };
             }
 
-            // Operadores Pontuação
+            // Pontuação e Operadores
             self.advance();
             return match ch {
                 '=' => {
