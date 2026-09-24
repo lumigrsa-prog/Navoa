@@ -30,9 +30,9 @@ pub enum Token {
     Menos,          // -
     Multiplicacao,  // *
     Divisao,        // /
-    E,              // e, and, et
-    Ou,             // ou, or, ou
-    Nao,            // nao, not, non
+    E,              // e, and, et, y, und
+    Ou,             // ou, or, o, oder
+    Nao,            // nao, not, non, no, nicht
     AbreParenteses, // (
     FechaParenteses,// )
     AbreChave,      // {
@@ -63,7 +63,6 @@ impl<'a> Lexer<'a> {
 
     pub fn proximo_token(&mut self) -> Token {
         while let Some(ch) = self.peek() {
-            // Ignorar espaços e ponto e vírgula
             if ch.is_whitespace() || ch == ';' {
                 self.advance();
                 continue;
@@ -112,7 +111,7 @@ impl<'a> Lexer<'a> {
                 return Token::Numero(val);
             }
 
-            // Identificadores e Palavras-Chave Multi-Idioma
+            // Identificadores e Palavras-Chave (PT, EN, FR, ES, IT, DE)
             if ch.is_alphabetic() || ch == '_' {
                 let mut ident = String::new();
                 while let Some(c) = self.peek() {
@@ -125,20 +124,40 @@ impl<'a> Lexer<'a> {
                 }
 
                 return match ident.as_str() {
-                    "se" | "if" | "si" => Token::Se,
-                    "senao" | "else" | "sinon" => Token::Senao,
-                    "enquanto" | "while" | "tantque" | "mientras" => Token::Enquanto,
-                    "para" | "for" | "pour" => Token::Para,
-                    "funcao" | "fn" | "function" | "fonction" => Token::Funcao,
-                    "retornar" | "retorna" | "return" | "retourner" => Token::Retornar,
-                    "imprimir" | "print" | "ecrire" | "escribir" => Token::Imprimir,
+                    // Condicionais (PT: se | EN: if | FR/ES/IT: si, se | DE: wenn, falls)
+                    "se" | "if" | "si" | "wenn" | "falls" => Token::Se,
+                    // Senão (PT: senao | EN: else | FR: sinon | ES: sino | IT: altrimenti | DE: sonst)
+                    "senao" | "else" | "sinon" | "sino" | "altrimenti" | "sonst" => Token::Senao,
+
+                    // Repetição (PT: enquanto | EN: while | FR: tantque | ES: mientras | IT: mentre | DE: solange, waehrend, während)
+                    "enquanto" | "while" | "tantque" | "mientras" | "mentre" | "solange" | "waehrend" | "während" => Token::Enquanto,
+                    // Para (PT/ES: para | EN: for | FR: pour | IT: per | DE: fuer, für)
+                    "para" | "for" | "pour" | "per" | "fuer" | "für" => Token::Para,
+
+                    // Funções e Retorno (PT: funcao | EN: fn, function | FR: fonction | ES: funcion | IT: funzione | DE: funktion)
+                    "funcao" | "fn" | "function" | "fonction" | "funcion" | "funzione" | "funktion" => Token::Funcao,
+                    "retornar" | "retorna" | "return" | "retourner" | "ritornare" | "ritorna" | "rueckgabe" | "rückgabe" | "zurueck" => Token::Retornar,
+
+                    // Saída (PT: imprimir | EN: print | FR: ecrire | ES: escribir | IT: stampare, scrivere | DE: drucken, ausgeben)
+                    "imprimir" | "print" | "ecrire" | "escribir" | "stampare" | "scrivere" | "drucken" | "ausgeben" => Token::Imprimir,
+
+                    // Variáveis
                     "var" | "let" => Token::Var,
-                    "verdadeiro" | "true" | "vrai" => Token::Verdadeiro,
-                    "falso" | "false" | "faux" => Token::Falso,
-                    "nulo" | "null" | "nil" => Token::Nulo,
-                    "e" | "and" | "et" => Token::E,
-                    "ou" | "or" => Token::Ou,
-                    "nao" | "not" | "non" => Token::Nao,
+
+                    // Valores lógicos (PT: verdadeiro | EN: true | FR: vrai | ES: verdadero | IT: vero | DE: wahr)
+                    "verdadeiro" | "true" | "vrai" | "verdadero" | "vero" | "wahr" => Token::Verdadeiro,
+                    // Falso (PT/ES/IT: falso | EN: false | FR: faux | DE: falsch)
+                    "falso" | "false" | "faux" | "falsch" => Token::Falso,
+                    // Nulo (PT/ES: nulo | EN: null, nil | FR: nul | IT: nullo | DE: null)
+                    "nulo" | "null" | "nil" | "nul" | "nullo" => Token::Nulo,
+
+                    // Operadores lógicos (PT: e | EN: and | FR: et | ES: y | DE: und)
+                    "e" | "and" | "et" | "y" | "und" => Token::E,
+                    // Ou (PT/FR: ou | EN: or | ES/IT: o | DE: oder)
+                    "ou" | "or" | "o" | "oder" => Token::Ou,
+                    // Não (PT: nao | EN: not | FR/IT: non | ES: no | DE: nicht)
+                    "nao" | "not" | "non" | "no" | "nicht" => Token::Nao,
+
                     _ => Token::Identificador(ident),
                 };
             }
