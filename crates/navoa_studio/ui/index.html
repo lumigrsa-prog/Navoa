@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Navoa Studio</title>
+  <style>
+    body { font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; }
+    textarea { width: 100%; height: 300px; background: #252526; color: #fff; border: 1px solid #3c3c3c; padding: 10px; }
+    button { background: #0e639c; color: white; border: none; padding: 10px 20px; cursor: pointer; margin-top: 10px; }
+    #output { margin-top: 20px; padding: 10px; background: #000; border: 1px solid #333; min-height: 100px; }
+  </style>
+</head>
+<body>
+  <h2>Navoa Studio</h2>
+  <textarea id="codigo" placeholder="Escreva o seu código .navoa aqui..."></textarea>
+  <br>
+  <button onclick="executar()">Executar</button>
+  <div id="output">Consola de Saída...</div>
+
+  <script>
+    const { invoke } = window.__TAURI__.core;
+    async function executar() {
+      const codigo = document.getElementById("codigo").value;
+      const output = document.getElementById("output");
+      try {
+        const res = await invoke("executar_navoa", { codigo });
+        output.innerText = res;
+      } catch (err) {
+        output.innerText = err;
+      }
+    }
+  </script>
+</body>
+</html>
