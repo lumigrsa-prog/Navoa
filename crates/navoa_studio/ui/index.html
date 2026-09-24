@@ -2,31 +2,166 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Navoa Studio</title>
+
+  <!-- Estilos do CodeMirror e Tema Dracula -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+
   <style>
-    body { font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; }
-    textarea { width: 100%; height: 300px; background: #252526; color: #fff; border: 1px solid #3c3c3c; padding: 10px; }
-    button { background: #0e639c; color: white; border: none; padding: 10px 20px; cursor: pointer; margin-top: 10px; }
-    #output { margin-top: 20px; padding: 10px; background: #000; border: 1px solid #333; min-height: 100px; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #181818;
+      color: #d4d4d4;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      color: #569cd6;
+      font-size: 20px;
+    }
+
+    .CodeMirror {
+      height: 380px;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #333;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1177bb;
+    }
+
+    #output {
+      margin-top: 16px;
+      padding: 14px;
+      background: #0c0c0c;
+      border: 1px solid #282828;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      min-height: 100px;
+      white-space: pre-wrap;
+      color: #4ec9b0;
+    }
   </style>
 </head>
 <body>
-  <h2>Navoa Studio</h2>
-  <textarea id="codigo" placeholder="Escreva o seu código .navoa aqui..."></textarea>
-  <br>
-  <button onclick="executar()">Executar</button>
-  <div id="output">Consola de Saída...</div>
 
+  <div class="header">
+    <h2>Navoa Studio</h2>
+  </div>
+
+  <textarea id="codigo"></textarea>
+
+  <div class="actions">
+    <button onclick="executar()">▶ Executar Código</button>
+  </div>
+
+  <div id="output">Aguardando execução...</div>
+
+  <!-- Script do CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script>
-    const { invoke } = window.__TAURI__.core;
+    // 1. Definição do Tokenizer da Linguagem Navoa
+    CodeMirror.defineMode("navoa", function() {
+      const palavrasChave = /^(se|senao|enquanto|para|funcao|retornar|retorna|var|const|imprimir|parar|continuar)\b/;
+      const booleanos = /^(verdadeiro|falso|nulo)\b/;
+      const operadores = /^(e|ou|nao|\+|-|\*|\/|=|>|<|>=|<=|==|!=)\b/;
+
+      return {
+        token: function(stream) {
+          if (stream.eatSpace()) return null;
+
+          // Comentários //
+          if (stream.match("//")) {
+            stream.skipToEnd();
+            return "comment";
+          }
+
+          // Textos / Strings
+          if (stream.match(/^"([^"\\]|\\.)*"/) || stream.match(/^'([^'\\]|\\.)*'/)) {
+            return "string";
+          }
+
+          // Números
+          if (stream.match(/^[0-9]+(\.[0-9]+)?/)) {
+            return "number";
+          }
+
+          // Palavras-chave e operadores em Português
+          if (stream.match(palavrasChave)) return "keyword";
+          if (stream.match(booleanos)) return "atom";
+          if (stream.match(operadores)) return "operator";
+
+          // Nomes de variáveis e identificadores
+          if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)) {
+            return "variable";
+          }
+
+          stream.next();
+          return null;
+        }
+      };
+    });
+
+    // 2. Inicializar o Editor
+    const editor = CodeMirror.fromTextArea(document.getElementById("codigo"), {
+      mode: "navoa",
+      theme: "dracula",
+      lineNumbers: true,
+      indentUnit: 2,
+      tabSize: 2,
+      lineWrapping: true
+    });
+
+    // Código inicial de demonstração
+    editor.setValue('// Teste da Linguagem Navoa\nvar limite = 5\nvar contador = 1\n\nenquanto contador <= limite {\n  imprimir("Passo: ")\n  contador = contador + 1\n}');
+
+    // 3. Comunicação com o Backend Rust (Tauri v2)
     async function executar() {
-      const codigo = document.getElementById("codigo").value;
+      const codigo = editor.getValue();
       const output = document.getElementById("output");
+      output.innerText = "A executar...";
+
       try {
-        const res = await invoke("executar_navoa", { codigo });
-        output.innerText = res;
+        if (window.__TAURI__ && window.__TAURI__.core) {
+          const res = await window.__TAURI__.core.invoke("executar_navoa", { codigo });
+          output.innerText = res;
+        } else {
+          output.innerText = "Código enviado:\n\n" + codigo + "\n\n(Servidor Tauri não detetado — execute via App Nativa).";
+        }
       } catch (err) {
-        output.innerText = err;
+        output.innerText = "Erro: " + err;
       }
     }
   </script>
