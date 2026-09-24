@@ -196,3 +196,30 @@ impl<'a> Lexer<'a> {
         Token::EOF
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_keywords_multilingues() {
+        // PT, EN, FR, ES, IT, DE
+        let codigo = "imprimir print ecrire escribir stampare drucken";
+        let mut lexer = Lexer::novo(codigo);
+        for _ in 0..6 {
+            assert_eq!(lexer.proximo_token(), Token::Imprimir);
+        }
+
+        let condicionais = "se if si wenn";
+        let mut lexer = Lexer::novo(condicionais);
+        for _ in 0..4 {
+            assert_eq!(lexer.proximo_token(), Token::Se);
+        }
+
+        let lacos = "enquanto while tantque mientras mentre solange";
+        let mut lexer = Lexer::novo(lacos);
+        for _ in 0..6 {
+            assert_eq!(lexer.proximo_token(), Token::Enquanto);
+        }
+    }
+}

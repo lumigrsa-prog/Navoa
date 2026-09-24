@@ -1,102 +1,117 @@
-use navoa_ast::{Expr, Statement};
-use navoa_lexer::Token;
+use navoa_ast::{Expressao, Instrucao, Programa};
+use navoa_lexer::{Lexer, Token};
 
 pub struct Parser<'a> {
-    tokens: &'a [Token],
-    position: usize,
+    lexer: Lexer<'a>,
+    token_atual: Token,
 }
 
 impl<'a> Parser<'a> {
-    pub fn new(tokens: &'a [Token]) -> Self {
-        Self { tokens, position: 0 }
+    pub fn novo(mut lexer: Lexer<'a>) -> Self {
+        let token_atual = lexer.proximo_token();
+        Self { lexer, token_atual }
     }
 
-    fn peek(&self) -> Option<&Token> {
-        self.tokens.get(self.position)
+    fn avançar(&mut self) {
+        self.token_atual = self.lexer.proximo_token();
     }
 
-    fn advance(&mut self) -> Option<&Token> {
-        let tok = self.tokens.get(self.position);
-        if tok.is_some() {
-            self.position += 1;
-        }
-        tok
-    }
-
-    pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
-        let mut statements = Vec::new();
-
-        while let Some(tok) = self.peek() {
-            if tok == &Token::EOF {
-                break;
+    pub fn parse_programa(&mut self) -> Programa {
+        let mut instrucoes = Vec::new();
+        while self.token_atual != Token::EOF {
+            if let Some(inst) = self.parse_instrucao() {
+                instrucoes.push(inst);
+            } else {
+                self.avançar();
             }
-            let stmt = self.parse_statement()?;
-            statements.push(stmt);
         }
-
-        Ok(statements)
+        Programa { instrucoes }
     }
 
-    fn parse_statement(&mut self) -> Result<Statement, String> {
-        match self.peek() {
-            Some(Token::Imprimir) => {
-                self.advance();
-                let expr = self.parse_expression()?;
-                Ok(Statement::Imprimir(expr))
+    fn parse_instrucao(&mut self) -> Option<Instrucao> {
+        match self.token_atual.clone() {
+            Token::Imprimir => {
+                self.avançar();
+                let expr = self.parse_expressao()?;
+                Some(Instrucao::Imprimir(expr))
             }
-            Some(Token::Var) => {
-                self.advance();
-                if let Some(Token::Identificador(nome)) = self.advance().cloned() {
-                    if let Some(Token::Atribuicao) = self.advance() {
-                        let expr = self.parse_expression()?;
-                        Ok(Statement::Atribuir(nome, expr))
+            Token::Var => {
+                self.avançar();
+                if let Token::Identificador(nome) = self.token_atual.clone() {
+                    self.avançar();
+                    if self.token_atual == Token::Atribuicao {
+                        self.avançar();
+                        let valor = self.parse_expressao()?;
+                        Some(Instrucao::Atribuicao { nome, valor })
                     } else {
-                        Err("Esperado '=' após o nome da variável.".to_string())
+                        None
                     }
                 } else {
-                    Err("Esperado identificador após 'var'.".to_string())
+                    None
                 }
             }
-            Some(Token::Identificador(nome)) => {
-                let nome_var = nome.clone();
-                if self.tokens.get(self.position + 1) == Some(&Token::Atribuicao) {
-                    self.advance(); // consome o identificador
-                    self.advance(); // consome '='
-                    let expr = self.parse_expression()?;
-                    Ok(Statement::Atribuir(nome_var, expr))
+            Token::Se => {
+                self.avançar();
+                let condicao = self.parse_expressao()?;
+                let bloco_entao = self.parse_bloco()?;
+                
+                let bloco_senao = if self.token_atual == Token::Senao {
+                    self.avançar();
+                    Some(self.parse_bloco()?)
                 } else {
-                    Err(format!("Sintaxe não reconhecida próxima a '{}'", nome_var))
-                }
+                    None
+                };
+
+                Some(Instrucao::Se {
+                    condicao,
+                    bloco_entao,
+                    bloco_senao,
+                })
             }
-            Some(t) => Err(format!("Token inesperado no início da instrução: {:?}", t)),
-            None => Err("Fim de ficheiro inesperado.".to_string()),
+            Token::Enquanto => {
+                self.avançar();
+                let condicao = self.parse_expressao()?;
+                let bloco = self.parse_bloco()?;
+                Some(Instrucao::Enquanto { condicao, bloco })
+            }
+            _ => None,
         }
     }
 
-    fn parse_expression(&mut self) -> Result<Expr, String> {
-        let em_parenteses = if self.peek() == Some(&Token::AbreParenteses) {
-            self.advance();
-            true
-        } else {
-            false
-        };
+    fn parse_bloco(&mut self) -> Option<Vec<Instrucao>> {
+        if self.token_atual != Token::AbreChave {
+            return None;
+        }
+        self.avançar(); // Consome '{'
 
-        let expr = match self.advance() {
-            Some(Token::Numero(n)) => Expr::Numero(*n),
-            Some(Token::Texto(s)) => Expr::Texto(s.clone()),
-            Some(Token::Identificador(nome)) => Expr::Identificador(nome.clone()),
-            Some(t) => return Err(format!("Expressão inválida próxima a {:?}", t)),
-            None => return Err("Expressão incompleta.".to_string()),
-        };
-
-        if em_parenteses {
-            if self.peek() == Some(&Token::FechaParenteses) {
-                self.advance();
+        let mut instrucoes = Vec::new();
+        while self.token_atual != Token::FechaChave && self.token_atual != Token::EOF {
+            if let Some(inst) = self.parse_instrucao() {
+                instrucoes.push(inst);
             } else {
-                return Err("Esperado ')' após expressão.".to_string());
+                self.avançar();
             }
         }
 
-        Ok(expr)
+        if self.token_atual == Token::FechaChave {
+            self.avançar(); // Consome '}'
+        }
+
+        Some(instrucoes)
+    }
+
+    fn parse_expressao(&mut self) -> Option<Expressao> {
+        let expr = match self.token_atual.clone() {
+            Token::Numero(val) => Some(Expressao::Numero(val)),
+            Token::Texto(txt) => Some(Expressao::Texto(txt)),
+            Token::Identificador(nome) => Some(Expressao::Variavel(nome)),
+            Token::Verdadeiro => Some(Expressao::Booleano(true)),
+            Token::Falso => Some(Expressao::Booleano(false)),
+            _ => None,
+        };
+        if expr.is_some() {
+            self.avançar();
+        }
+        expr
     }
 }

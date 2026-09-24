@@ -1,32 +1,28 @@
-use navoa_lexer::{Lexer, Token};
+use navoa_lexer::Lexer;
 use navoa_parser::Parser;
-use navoa_vm::Vm;
+use navoa_vm::VM;
+use std::env;
+use std::fs;
 
 fn main() {
-    println!("=== Navoa CLI ===");
-
-    let codigo_exemplo = "imprimir \"Olá, Navoa!\";";
-    let mut lexer = Lexer::novo(codigo_exemplo);
-    let mut tokens = Vec::new();
-    
-    loop {
-        let tok = lexer.proximo_token();
-        if tok == Token::EOF {
-            break;
-        }
-        tokens.push(tok);
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        println!("Uso: navoa <ficheiro.navoa>");
+        return;
     }
 
-    let mut parser = Parser::new(&tokens);
-    match parser.parse() {
-        Ok(statements) => {
-            let mut vm = Vm::new();
-            vm.executar(statements);
-            println!("{}", vm.obter_saida());
-            println!("Execução concluída com sucesso!");
-        }
-        Err(e) => {
-            eprintln!("Erro de sintaxe: {:?}", e);
-        }
+    let caminho = &args[1];
+    let conteudo = fs::read_to_string(caminho).expect("Erro ao ler o ficheiro");
+
+    let lexer = Lexer::novo(&conteudo);
+    let mut parser = Parser::novo(lexer);
+    let programa = parser.parse_programa();
+
+    let mut vm = VM::nova();
+    vm.executar(&programa);
+    
+    let saida = vm.obter_saida();
+    if !saida.is_empty() {
+        println!("{}", saida);
     }
 }
