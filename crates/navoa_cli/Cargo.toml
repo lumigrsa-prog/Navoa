@@ -9,3 +9,7 @@ navoa_parser = { path = "../navoa_parser" }
 navoa_codegen = { path = "../navoa_codegen" }
 navoa_vm = { path = "../navoa_vm" }
 ctrlc = "3.4"
+
+[dev-dependencies]
+navoa_bytecode = { path = "../navoa_bytecode" }
+navoa_ast = { path = "../navoa_ast" }

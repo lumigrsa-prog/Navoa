@@ -1,14 +1,9 @@
-use navoa_bytecode::BytecodeProgram;
-use navoa_vm::VM;
+use navoa_ast::Statement;
+use navoa_vm::Vm;
 
 #[test]
 fn test_vm_basic_execution() {
-    // BytecodeProgram recebe diretamente a lista de instruções geradas pelo codegen
-    let program = BytecodeProgram {
-        instructions: vec![],
-    };
-
-    let mut vm = VM::new();
-    let result = vm.run(&program);
-    assert!(result.is_ok());
+    let statements: Vec<Statement> = vec![];
+    let mut vm = Vm::new();
+    vm.executar(statements);
 }
