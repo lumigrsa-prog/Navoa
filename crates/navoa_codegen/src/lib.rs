@@ -19,6 +19,19 @@ impl Codegen {
             Instrucao::Atribuicao { nome, valor } => {
                 format!("let {} = {};\n", nome, Self::gerar_expressao_js(valor))
             }
+            Instrucao::DeclararFuncao { nome, parametros, corpo } => {
+                let params = parametros.join(", ");
+                let mut res = format!("function {}({}) {{\n", nome, params);
+                for sub in corpo {
+                    res.push_str(&format!("  {}", Self::gerar_instrucao_js(sub)));
+                }
+                res.push_str("}\n");
+                res
+            }
+            Instrucao::Retornar(opt_expr) => match opt_expr {
+                Some(expr) => format!("return {};\n", Self::gerar_expressao_js(expr)),
+                None => "return;\n".to_string(),
+            },
             Instrucao::Se { condicao, bloco_entao, bloco_senao } => {
                 let cond = Self::gerar_expressao_js(condicao);
                 let mut res = format!("if ({}) {{\n", cond);
@@ -45,6 +58,9 @@ impl Codegen {
                 res.push_str("}\n");
                 res
             }
+            Instrucao::Expressao(expr) => {
+                format!("{};\n", Self::gerar_expressao_js(expr))
+            }
         }
     }
 
@@ -54,6 +70,10 @@ impl Codegen {
             Expressao::Texto(t) => format!("\"{}\"", t),
             Expressao::Variavel(nome) => nome.clone(),
             Expressao::Booleano(b) => b.to_string(),
+            Expressao::Chamada { nome, argumentos } => {
+                let args: Vec<String> = argumentos.iter().map(Self::gerar_expressao_js).collect();
+                format!("{}({})", nome, args.join(", "))
+            }
         }
     }
 }

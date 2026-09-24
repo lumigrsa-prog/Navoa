@@ -54,14 +54,12 @@ impl<'a> Parser<'a> {
                 self.avançar();
                 let condicao = self.parse_expressao()?;
                 let bloco_entao = self.parse_bloco()?;
-                
                 let bloco_senao = if self.token_atual == Token::Senao {
                     self.avançar();
                     Some(self.parse_bloco()?)
                 } else {
                     None
                 };
-
                 Some(Instrucao::Se {
                     condicao,
                     bloco_entao,
@@ -74,7 +72,54 @@ impl<'a> Parser<'a> {
                 let bloco = self.parse_bloco()?;
                 Some(Instrucao::Enquanto { condicao, bloco })
             }
-            _ => None,
+            Token::Funcao => {
+                self.avançar();
+                if let Token::Identificador(nome) = self.token_atual.clone() {
+                    self.avançar();
+                    if self.token_atual != Token::AbreParenteses {
+                        return None;
+                    }
+                    self.avançar(); // Consome '('
+
+                    let mut parametros = Vec::new();
+                    while self.token_atual != Token::FechaParenteses && self.token_atual != Token::EOF {
+                        if let Token::Identificador(p) = self.token_atual.clone() {
+                            parametros.push(p);
+                            self.avançar();
+                            if self.token_atual == Token::Virgula {
+                                self.avançar();
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if self.token_atual == Token::FechaParenteses {
+                        self.avançar(); // Consome ')'
+                    }
+
+                    let corpo = self.parse_bloco()?;
+                    Some(Instrucao::DeclararFuncao {
+                        nome,
+                        parametros,
+                        corpo,
+                    })
+                } else {
+                    None
+                }
+            }
+            Token::Retornar => {
+                self.avançar();
+                let expr = self.parse_expressao();
+                Some(Instrucao::Retornar(expr))
+            }
+            _ => {
+                if let Some(expr) = self.parse_expressao() {
+                    Some(Instrucao::Expressao(expr))
+                } else {
+                    None
+                }
+            }
         }
     }
 
@@ -101,17 +146,47 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_expressao(&mut self) -> Option<Expressao> {
-        let expr = match self.token_atual.clone() {
-            Token::Numero(val) => Some(Expressao::Numero(val)),
-            Token::Texto(txt) => Some(Expressao::Texto(txt)),
-            Token::Identificador(nome) => Some(Expressao::Variavel(nome)),
-            Token::Verdadeiro => Some(Expressao::Booleano(true)),
-            Token::Falso => Some(Expressao::Booleano(false)),
+        match self.token_atual.clone() {
+            Token::Numero(val) => {
+                self.avançar();
+                Some(Expressao::Numero(val))
+            }
+            Token::Texto(txt) => {
+                self.avançar();
+                Some(Expressao::Texto(txt))
+            }
+            Token::Verdadeiro => {
+                self.avançar();
+                Some(Expressao::Booleano(true))
+            }
+            Token::Falso => {
+                self.avançar();
+                Some(Expressao::Booleano(false))
+            }
+            Token::Identificador(nome) => {
+                self.avançar();
+                if self.token_atual == Token::AbreParenteses {
+                    self.avançar(); // Consome '('
+                    let mut argumentos = Vec::new();
+                    while self.token_atual != Token::FechaParenteses && self.token_atual != Token::EOF {
+                        if let Some(arg) = self.parse_expressao() {
+                            argumentos.push(arg);
+                            if self.token_atual == Token::Virgula {
+                                self.avançar();
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    if self.token_atual == Token::FechaParenteses {
+                        self.avançar(); // Consome ')'
+                    }
+                    Some(Expressao::Chamada { nome, argumentos })
+                } else {
+                    Some(Expressao::Variavel(nome))
+                }
+            }
             _ => None,
-        };
-        if expr.is_some() {
-            self.avançar();
         }
-        expr
     }
 }

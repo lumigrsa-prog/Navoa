@@ -4,6 +4,10 @@ pub enum Expressao {
     Texto(String),
     Variavel(String),
     Booleano(bool),
+    Chamada {
+        nome: String,
+        argumentos: Vec<Expressao>,
+    },
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -22,6 +26,13 @@ pub enum Instrucao {
         condicao: Expressao,
         bloco: Vec<Instrucao>,
     },
+    DeclararFuncao {
+        nome: String,
+        parametros: Vec<String>,
+        corpo: Vec<Instrucao>,
+    },
+    Retornar(Option<Expressao>),
+    Expressao(Expressao),
 }
 
 #[derive(Debug, PartialEq, Clone)]
