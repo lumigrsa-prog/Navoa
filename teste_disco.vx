@@ -1,8 +1,0 @@
-// Teste de operações de ficheiro
-
-imprimir "A criar e a escrever num ficheiro...";
-escrever_ficheiro("notas.txt", "Olá do interior do Vortex! Ficheiro criado com sucesso.");
-
-imprimir "A ler o conteúdo do ficheiro criado:";
-seja conteudo = ler_ficheiro("notas.txt");
-imprimir conteudo;
