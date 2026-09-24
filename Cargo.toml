@@ -1,10 +1,11 @@
 [workspace]
-resolver = "2"
 members = [
     "crates/navoa_lexer",
+    "crates/navoa_ast",
     "crates/navoa_parser",
-    "crates/navoa_codegen",
     "crates/navoa_vm",
-    "crates/navoa_cli"
+    "crates/navoa_codegen",
+    "crates/navoa_cli",
+    "crates/navoa_studio/src-tauri",
 ]
-
+resolver = "2"
