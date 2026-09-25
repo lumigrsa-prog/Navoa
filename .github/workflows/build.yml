@@ -1,24 +1,51 @@
-name: CI & Build Navoa
+name: Build Navoa Multiplatform App
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main, master ]
 
 jobs:
-  test:
-    name: Test & Check Workspace
+  build-android:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
+      - name: Configurar Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
 
-      - name: Cargo Check
-        run: cargo check --all-targets
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
-      - name: Run Tests
-        run: cargo test --workspace
+      - name: Instalar flutter_rust_bridge_codegen e cargo-ndk
+        run: |
+          cargo install "flutter_rust_bridge_codegen@^2.0.0"
+          cargo install cargo-ndk
+
+      - name: Gerar Bindings do Rust para Flutter
+        run: flutter_rust_bridge_codegen generate
+
+      - name: Instalar dependências do Flutter
+        run: flutter pub get
+
+      - name: Compilar APK Android
+        run: flutter build apk --release
+
+      - name: Guardar APK como Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: Navoa-Android-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
