@@ -30,10 +30,16 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Gerar estrutura nativa Android
-        run: flutter create . --org com.navoa --project-name navoa --overwrite
+      - name: Gerar apenas pasta nativa Android (sem sobrescrever pubspec.yaml)
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create --platforms=android --org com.navoa .
+          fi
 
-      - name: Instalar ferramentas Rust (cargo-binstall, frb, cargo-ndk)
+      - name: Garantir dependências no pubspec.yaml
+        run: flutter pub add flutter_rust_bridge:^2.13.0
+
+      - name: Instalar cargo-binstall, flutter_rust_bridge_codegen e cargo-ndk
         run: |
           curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
           ~/.cargo/bin/cargo-binstall flutter_rust_bridge_codegen@^2.0.0 -y
@@ -43,11 +49,10 @@ jobs:
         run: ~/.cargo/bin/flutter_rust_bridge_codegen generate
 
       - name: Compilar bibliotecas Rust (.so) para Android
-        env:
-          NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
         run: |
           mkdir -p android/app/src/main/jniLibs
-          ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml
+          ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml || \
+          ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml
 
       - name: Instalar dependências do Flutter
         run: flutter pub get
