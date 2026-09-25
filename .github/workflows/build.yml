@@ -30,7 +30,7 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Gerar apenas pasta nativa Android (sem sobrescrever pubspec.yaml)
+      - name: Gerar pasta nativa Android (se não existir)
         run: |
           if [ ! -d "android" ]; then
             flutter create --platforms=android --org com.navoa .
@@ -46,7 +46,7 @@ jobs:
           ~/.cargo/bin/cargo-binstall cargo-ndk -y
 
       - name: Gerar Bindings do Rust para Flutter
-        run: ~/.cargo/bin/flutter_rust_bridge_codegen generate
+        run: ~/.cargo/bin/flutter_rust_bridge_codegen generate -i rust/src/api/mod.rs -d lib/src/rust/
 
       - name: Compilar bibliotecas Rust (.so) para Android
         run: |
