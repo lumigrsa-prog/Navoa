@@ -1,8 +1,6 @@
-
 [package]
-name = "navoa_cli"
+name = "navoa_core"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-navoa_core = { path = "../navoa_core" }

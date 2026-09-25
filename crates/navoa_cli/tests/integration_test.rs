@@ -1,22 +1,25 @@
-use navoa_lexer::Lexer;
-use navoa_parser::Parser;
-use navoa_vm::VM;
+use navoa_core::lexer::Lexer;
+use navoa_core::parser::Parser;
+use navoa_core::vm::{Value, VM};
 
 #[test]
-fn test_funcoes_e_retorno() {
-    let codigo = "
-        funcao somar(a, b) {
-            retornar a
-        }
-        var res = somar(10, 20)
-        imprimir res
-    ";
+fn test_full_pipeline_array() {
+    let code = "[10, 20, 30]";
+    let mut lexer = Lexer::new(code);
+    let tokens = lexer.tokenize();
 
-    let lexer = Lexer::novo(codigo);
-    let mut parser = Parser::novo(lexer);
-    let programa = parser.parse_programa();
+    let mut parser = Parser::new(tokens);
+    let ast = parser.parse().expect("Erro ao gerar AST");
 
-    let mut vm = VM::nova();
-    vm.executar(&programa);
-    assert_eq!(vm.obter_saida(), "10");
+    let mut vm = VM::new();
+    let result = vm.interpret(&ast).expect("Erro ao executar na VM");
+
+    assert_eq!(
+        result,
+        Value::Array(vec![
+            Value::Number(10.0),
+            Value::Number(20.0),
+            Value::Number(30.0),
+        ])
+    );
 }

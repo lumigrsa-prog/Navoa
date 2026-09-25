@@ -1,11 +1,7 @@
 [workspace]
 members = [
-    "crates/navoa_lexer",
-    "crates/navoa_ast",
-    "crates/navoa_parser",
-    "crates/navoa_vm",
-    "crates/navoa_codegen",
+    "crates/navoa_core",
     "crates/navoa_cli",
-    "crates/navoa_studio/src-tauri",
+    "rust"
 ]
 resolver = "2"
