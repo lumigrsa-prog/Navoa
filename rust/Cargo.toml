@@ -4,9 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 flutter_rust_bridge = "2.13.0"
 navoa_core = { path = "../crates/navoa_core" }
-tokio = { version = "1", features = ["full"] }

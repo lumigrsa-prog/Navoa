@@ -36,10 +36,15 @@ jobs:
             flutter create --platforms=android --org com.navoa .
           fi
 
+      - name: Ajustar minSdkVersion para 21 no Gradle
+        run: |
+          sed -i 's/minSdkVersion .*/minSdkVersion 21/' android/app/build.gradle || true
+          sed -i 's/minSdkVersion = .*/minSdkVersion = 21/' android/app/build.gradle.kts || true
+
       - name: Garantir dependências no pubspec.yaml
         run: flutter pub add flutter_rust_bridge:^2.13.0
 
-      - name: Instalar cargo-binstall, flutter_rust_bridge_codegen, cargo-ndk e cargo-expand
+      - name: Instalar ferramentas Rust (cargo-binstall, frb, cargo-ndk, cargo-expand)
         run: |
           curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
           ~/.cargo/bin/cargo-binstall flutter_rust_bridge_codegen@^2.0.0 -y
@@ -53,14 +58,14 @@ jobs:
       - name: Compilar bibliotecas Rust (.so) para Android
         run: |
           mkdir -p android/app/src/main/jniLibs
-          ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml || \
-          ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml
+          NDK_PATH=$(ls -d $ANDROID_HOME/ndk/* | tail -n 1)
+          ANDROID_NDK_HOME=$NDK_PATH ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml
 
       - name: Instalar dependências do Flutter
         run: flutter pub get
 
       - name: Compilar APK Android
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Guardar APK como Artefacto
         uses: actions/upload-artifact@v4
