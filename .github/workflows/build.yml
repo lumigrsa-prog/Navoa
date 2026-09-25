@@ -46,7 +46,7 @@ jobs:
           ~/.cargo/bin/cargo-binstall cargo-ndk -y
 
       - name: Gerar Bindings do Rust para Flutter
-        run: ~/.cargo/bin/flutter_rust_bridge_codegen generate --rust-input rust/src/api/mod.rs --dart-output lib/src/rust/
+        run: ~/.cargo/bin/flutter_rust_bridge_codegen generate --rust-root rust/ --rust-input crate::api --dart-output lib/src/rust/
 
       - name: Compilar bibliotecas Rust (.so) para Android
         run: |
