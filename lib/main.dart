@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'src/rust/api/interpreter.dart';
-import 'src/rust/frb_generated.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await RustLib.init();
   runApp(const NavoaApp());
 }
 
