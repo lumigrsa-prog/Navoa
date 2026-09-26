@@ -13,7 +13,7 @@ class NavoaApp extends StatelessWidget {
       title: 'Navoa OS',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
+        scaffoldBackgroundColor: const Color(0xFF050806),
         primaryColor: Colors.greenAccent,
       ),
       home: const LanguageSelectScreen(),
@@ -36,59 +36,89 @@ class LanguageSelectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'NAVOA OS',
-                style: TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 3,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'SELECIONE O IDIOMA / SELECT LANGUAGE',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: 300,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: languages.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6.0),
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.greenAccent),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => IntroScreen(lang: languages[index]['code']!),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          languages[index]['name']!,
-                          style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF050806), Color(0xFF0A140F)],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.greenAccent, width: 2),
+                  ),
+                  child: const Column(
+                    children: [
+                      Text(
+                        'NAVOA OS',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 4,
+                          fontFamily: 'monospace',
                         ),
                       ),
-                    );
-                  },
+                      SizedBox(height: 8),
+                      Text(
+                        '// NEVOEIRO SOBRE O TEJO',
+                        style: TextStyle(color: Colors.grey, fontSize: 11, fontFamily: 'monospace'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 40),
+                const Text(
+                  'SELECIONE O IDIOMA / SELECT LANGUAGE',
+                  style: TextStyle(color: Colors.greenAccent, fontSize: 13, letterSpacing: 1),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: 280,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: languages.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6.0),
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.greenAccent, width: 1.5),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: Colors.black45,
+                          ),
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => IntroScreen(lang: languages[index]['code']!),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            languages[index]['name']!,
+                            style: const TextStyle(
+                              color: Colors.greenAccent,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -103,23 +133,66 @@ class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    '// INTRODUÇÃO',
-                    style: TextStyle(color: Colors.greenAccent, letterSpacing: 2),
+      body: Container(
+        decoration: const BoxDecoration(color: Color(0xFF0A0F0D)),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '// DOSSIÊ: INTRODUÇÃO',
+                      style: TextStyle(color: Colors.greenAccent, letterSpacing: 2, fontFamily: 'monospace'),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        side: const BorderSide(color: Colors.greenAccent, width: 0.5),
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const TerminalScreen()),
+                        );
+                      },
+                      child: const Text(
+                        'SALTAR >>',
+                        style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    border: Border.all(color: Colors.greenAccent.withOpacity(0.5)),
                   ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      side: const BorderSide(color: Colors.greenAccent, width: 0.5),
+                  child: const Text(
+                    'Lisboa, Madrugada Fria.\n\n'
+                    'O nevoeiro do Tejo entra pelas frechas da janela do escritório. As lâmpadas de sódio lá fora projetam sombras compridas sobre a secretária onde descansa o terminal.\n\n'
+                    'O detetive Vicente Palma respira fundo o cheiro a tabaco velho e humidade. O caso das sombras no cais exige precisão.\n\n'
+                    'Bem-vindo ao ecossistema Navoa. A investigação começa agora.',
+                    style: TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 15,
+                      height: 1.6,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.greenAccent,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     onPressed: () {
                       Navigator.pushReplacement(
@@ -128,46 +201,13 @@ class IntroScreen extends StatelessWidget {
                       );
                     },
                     child: const Text(
-                      'SALTAR >>',
-                      style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                      'ENTRAR NO ESCRITÓRIO',
+                      style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontFamily: 'monospace'),
                     ),
                   ),
-                ],
-              ),
-              const Spacer(),
-              const Text(
-                'A cidade dorme sob uma camada espessa de nevoeiro que sobe do Tejo. As lâmpadas de vapor de sódio pintam as ruas de âmbar sujo.\n\n'
-                'No escritório escuro da Madragoa, o detetive Vicente Palma acende um cigarro cujos anéis de fumo se dissolvem na penumbra do monitor CRT.\n\n'
-                'Bem-vindo ao Navoa OS. Aqui, a programação e a investigação noir fundem-se.',
-                style: TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 15,
-                  height: 1.6,
-                  fontFamily: 'monospace',
                 ),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.greenAccent,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const TerminalScreen()),
-                    );
-                  },
-                  child: const Text(
-                    'ENTRAR NO ESCRITÓRIO',
-                    style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -185,18 +225,15 @@ class TerminalScreen extends StatefulWidget {
 class _TerminalScreenState extends State<TerminalScreen> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  
   int currentChapter = 1;
   int stepInChapter = 0;
-  bool chapterCompleted = false;
 
-  final List<String> _history = [
-    'Navoa OS [Versão 1.0.0 - Terminal Investigativo]',
-    '--------------------------------------------------',
-    '=== CAPÍTULO 1: O Nevoeiro sobre o Tejo ===',
-    'Lisboa, 03:15 AM. O som dos barcos distantes ecoa na amurada.',
-    'Vicente Palma olha para o terminal à espera de pistas.',
-    '-> Escreva: escrever [alvo: cais_do_sodre]'
-  ];
+  // Estado atual da narrativa e do que o jogador deve fazer
+  String narrativeTitle = 'CAPÍTULO 1: O Nevoeiro sobre o Tejo';
+  String narrativeText = 'O rio murmura contra as pedras da margem. O som de passos ecoa na rua vazia da Madragoa.\n\nVicente Palma olha para o terminal à espera de pistas.';
+  String expectedInstruction = 'Escreva exatamente: escrever [alvo: cais_do_sodre]';
+  String feedbackMessage = '';
 
   @override
   void dispose() {
@@ -215,15 +252,16 @@ class _TerminalScreenState extends State<TerminalScreen> {
   void _handleCommand(String input) {
     setState(() {
       String cmd = input.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-      _history.add('> $input');
 
       if (cmd == 'ajuda') {
-        _history.add('Comandos: progresso, reiniciar, limpar, sair');
+        feedbackMessage = '[AJUDA] Comandos: progresso, limpar, sair';
+        _controller.clear();
         _focusNode.requestFocus();
         return;
       }
       if (cmd == 'limpar') {
-        _history.clear();
+        feedbackMessage = '';
+        _controller.clear();
         _focusNode.requestFocus();
         return;
       }
@@ -234,57 +272,44 @@ class _TerminalScreenState extends State<TerminalScreen> {
 
       if (currentChapter == 1) {
         if (stepInChapter == 0 && cmd.startsWith('escrever ')) {
-          _history.add('\n[REGISTO] A humidade condensa-se no vidro. O cais está deserto.');
-          _history.add('-> Próximo passo: definir sombraco vicente');
+          feedbackMessage = '[OK] A humidade condensa-se no vidro. O cais está deserto.';
+          expectedInstruction = 'Escreva exatamente: definir sombraco vicente';
           stepInChapter++;
         } else if (stepInChapter == 1 && cmd.startsWith('definir sombraco ')) {
-          _history.add('\n[DETETIVE] Vicente assume o caso nas sombras.');
-          _history.add('-> Passo final do cap. 1: compilar_caso');
+          feedbackMessage = '[OK] Vicente assume o caso nas sombras do Tejo.';
+          expectedInstruction = 'Escreva exatamente: compilar_caso';
           stepInChapter++;
         } else if (stepInChapter == 2 && cmd == 'compilar_caso') {
-          _history.add('\n*** CAPÍTULO 1 CONCLUÍDO ***');
-          _history.add('O relatório ganha forma no ecrã verde phosphor.');
-          _history.add('-> Digite "proximo" para entrar nas brumas do Capítulo 2.');
-          chapterCompleted = true;
-          stepInChapter = 0;
-        } else if (chapterCompleted && cmd == 'proximo') {
           currentChapter = 2;
-          chapterCompleted = false;
-          _history.add('\n--------------------------------------------------');
-          _history.add('=== CAPÍTULO 2: Sombras na Madragoa ===');
-          _history.add('As ruelas estreitas escondem passos apressados e segredos antigos.');
-          _history.add('-> Escreva: varrer madragoa');
+          stepInChapter = 0;
+          narrativeTitle = 'CAPÍTULO 2: Sombras na Madragoa';
+          narrativeText = 'As ladeiras íngremes da Madragoa cheiram a café tostado e humidade antiga. É aqui que o informador costuma cruzar-se com o perigo.';
+          expectedInstruction = 'Escreva exatamente: varrer madragoa';
+          feedbackMessage = '*** CAPÍTULO 1 CONCLUÍDO! O caso avança nas brumas de Lisboa. ***';
         } else {
-          _history.add('[Noir] O eco responde na sala vazia. Tente o comando correto ou digite "ajuda".');
+          feedbackMessage = '[Erro] Comando incorreto. Siga a instrução indicada.';
         }
       } else if (currentChapter == 2) {
-        if (stepInChapter == 0 && (cmd == 'varrer madragoa' || cmd.contains('varrer'))) {
-          _history.add('\n[INVESTIGAÇÃO] A vassoura de palha agita o pó sob a luz ténue do candeeiro.');
-          _history.add('-> Próximo passo: analisar ruelas');
+        if (stepInChapter == 0 && cmd == 'varrer madragoa') {
+          feedbackMessage = '[OK] A vassoura de ramos secos levanta poeira antiga debaixo do lampião fundido.';
+          expectedInstruction = 'Escreva exatamente: analisar ruelas';
           stepInChapter++;
-        } else if (stepInChapter == 1 && (cmd == 'analisar ruelas' || cmd.contains('analisar'))) {
-          _history.add('\n*** CAPÍTULO 2 CONCLUÍDO ***');
-          _history.add('Encontraste um bilhete amarrotado no chão com o selo da Alfândega.');
-          _history.add('-> Digite "proximo" para avançar para o Capítulo 3.');
-          chapterCompleted = true;
-          stepInChapter = 0;
-        } else if (chapterCompleted && cmd == 'proximo') {
+        } else if (stepInChapter == 1 && cmd == 'analisar ruelas') {
           currentChapter = 3;
-          chapterCompleted = false;
-          _history.add('\n--------------------------------------------------');
-          _history.add('=== CAPÍTULO 3: O Cais do Tejo ===');
-          _history.add('O vento corta como lâmina fria junto à água escura.');
-          _history.add('-> Escreva: interceptar navio');
+          stepInChapter = 0;
+          narrativeTitle = 'CAPÍTULO 3: O Cais do Tejo';
+          narrativeText = 'As amarras rangem contra o casco do cargueiro ancorado na penumbra. O vento traz o cheiro acre de gasóleo e salitre.';
+          expectedInstruction = 'Escreva exatamente: interceptar navio';
+          feedbackMessage = '*** CAPÍTULO 2 CONCLUÍDO! Encontrou o bilhete da Alfândega. ***';
         } else {
-          _history.add('[Noir] A neblina confunde os sentidos. Escreva exatamente o comando pedido.');
+          feedbackMessage = '[Erro] Escreva exatamente o comando exigido.';
         }
       } else if (currentChapter == 3) {
-        if (stepInChapter == 0 && cmd.contains('interceptar')) {
-          _history.add('\n[CLÍMAX] Os cabos soltam-se. O mistério do Tejo começa a desvendar-se...');
-          _history.add('\n*** PARABÉNS! CONCLUÍSTE O ECOSSISTEMA NAVOA COM SUCESSO! ***');
-          chapterCompleted = true;
+        if (stepInChapter == 0 && cmd == 'interceptar navio') {
+          feedbackMessage = '*** PARABÉNS! O mistério do Tejo foi desvendado nas sombras! ***';
+          expectedInstruction = 'Fim da história. Escreva "sair" para voltar ao menu.';
         } else {
-          _history.add('[Noir] O tempo esgota-se. Escreva: interceptar navio');
+          feedbackMessage = '[Erro] Escreva exatamente: interceptar navio';
         }
       }
     });
@@ -296,53 +321,143 @@ class _TerminalScreenState extends State<TerminalScreen> {
   Widget build(BuildContext context) {
     const green = Colors.greenAccent;
     return Scaffold(
-      backgroundColor: Colors.black,
+      // AppBar fixa e inamovível no topo com o botão SAIR sempre visível
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text('NAVOA (CAP. $currentChapter)', style: const TextStyle(color: green, fontSize: 14)),
-        iconTheme: const IconThemeData(color: green),
+        backgroundColor: const Color(0xFF050806),
+        elevation: 4,
+        shadowColor: green.withOpacity(0.4),
+        title: Row(
+          children: [
+            Container(width: 8, height: 8, decoration: const BoxDecoration(color: green, shape: BoxShape.circle)),
+            const SizedBox(width: 8),
+            Text('NAVOA // CAP. $currentChapter', style: const TextStyle(color: green, fontSize: 13, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+          ],
+        ),
+        automaticallyImplyLeading: false,
         actions: [
-          TextButton.icon(
-            style: TextButton.styleFrom(foregroundColor: green),
-            onPressed: _exitToMenu,
-            icon: const Icon(Icons.exit_to_app, size: 16),
-            label: const Text('SAIR', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: green, width: 1),
+                foregroundColor: green,
+                backgroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+              onPressed: _exitToMenu,
+              icon: const Icon(Icons.exit_to_app, size: 14),
+              label: const Text('SAIR', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, fontFamily: 'monospace')),
+            ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: _history.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(_history[index], style: const TextStyle(color: green, fontFamily: 'monospace', fontSize: 14)),
-                  );
-                },
+      body: Column(
+        children: [
+          LinearProgressIndicator(
+            value: currentChapter == 1 ? 0.33 : (currentChapter == 2 ? 0.66 : 1.0),
+            backgroundColor: Colors.black,
+            color: green,
+            minHeight: 2,
+          ),
+          // Janela central dedicada à História e Narrativa (sem acumular texto desnecessário)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    narrativeTitle,
+                    style: const TextStyle(color: Colors.amberAccent, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(color: green.withOpacity(0.4)),
+                    ),
+                    child: Text(
+                      narrativeText,
+                      style: const TextStyle(color: green, fontSize: 14, height: 1.5, fontFamily: 'monospace'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0A140F),
+                      border: Border.all(color: Colors.lightGreenAccent.withOpacity(0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '>> AÇÃO NECESSÁRIA:',
+                          style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          expectedInstruction,
+                          style: const TextStyle(color: Colors.lightGreenAccent, fontSize: 13, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (feedbackMessage.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      feedbackMessage,
+                      style: TextStyle(
+                        color: feedbackMessage.contains('Erro') ? Colors.redAccent : Colors.amberAccent,
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const Divider(color: green),
-            Row(
+          ),
+          // Linha de Comandos Fixa na Base
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            decoration: const BoxDecoration(
+              color: Color(0xFF0A0F0D),
+              border: Border(top: BorderSide(color: Colors.greenAccent, width: 0.5)),
+            ),
+            child: Row(
               children: [
-                const Text('> ', style: TextStyle(color: green, fontWeight: FontWeight.bold)),
+                const Text('> ', style: TextStyle(color: green, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
                 Expanded(
                   child: TextField(
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
-                    style: const TextStyle(color: green, fontFamily: 'monospace'),
-                    decoration: const InputDecoration(border: InputBorder.none, hintText: 'digite o comando...'),
+                    style: const TextStyle(color: green, fontFamily: 'monospace', fontSize: 14),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'introduzir comando...',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
+                      isDense: true,
+                    ),
                     onSubmitted: _handleCommand,
                   ),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.send, color: green, size: 18),
+                  onPressed: () {
+                    if (_controller.text.isNotEmpty) {
+                      _handleCommand(_controller.text);
+                    }
+                  },
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
