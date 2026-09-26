@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'src/rust/frb_generated.dart';
-import 'src/rust/api/interpreter.dart';
+import 'package:navoa_bridge/src/rust/api/interpreter.dart';
+import 'package:navoa_bridge/src/rust/frb_generated.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,106 +14,104 @@ class NavoaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Navoa Studio',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(useMaterial3: true),
-      home: const NavoaHomeScreen(),
+      title: 'Navoa OS',
+      theme: ThemeData.dark(),
+      home: const NavoaScreen(),
     );
   }
 }
 
-class NavoaHomeScreen extends StatefulWidget {
-  const NavoaHomeScreen({super.key});
+class NavoaScreen extends StatefulWidget {
+  const NavoaScreen({super.key});
 
   @override
-  State<NavoaHomeScreen> createState() => _NavoaHomeScreenState();
+  State<NavoaScreen> createState() => _NavoaScreenState();
 }
 
-class _NavoaHomeScreenState extends State<NavoaHomeScreen> {
-  final TextEditingController _codeController = TextEditingController(
-    text: 'println("Olá, Navoa!");',
-  );
-  String _output = '';
-  bool _isRunning = false;
+class _NavoaScreenState extends State<NavoaScreen> {
+  final InterpreterBridge _bridge = InterpreterBridge();
+  final TextEditingController _controller = TextEditingController();
+  final List<String> _logs = [
+    "> SISTEMA OPERACIONAL NAVOA // TERMINAL DE INVESTIGAÇÃO",
+    "> Digita 'inspecionar quarto' para começar."
+  ];
 
-  void _runCode() async {
+  void _executarComando() {
+    final cmd = _controller.text.trim();
+    if (cmd.isEmpty) return;
+
     setState(() {
-      _isRunning = true;
+      _logs.add("> $cmd");
+      final res = _bridge.execute(code: cmd);
+      _logs.add(res);
+      _controller.clear();
     });
-
-    try {
-      final session = NavoaSession();
-      final result = await session.executeCode(code: _codeController.text);
-      setState(() {
-        _output = result;
-      });
-    } catch (e) {
-      setState(() {
-        _output = 'Erro na execução: $e';
-      });
-    } finally {
-      setState(() {
-        _isRunning = false;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0D0C07),
       appBar: AppBar(
-        title: const Text('Navoa Studio'),
-        actions: [
-          IconButton(
-            icon: _isRunning
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Icons.play_arrow, color: Colors.greenAccent),
-            onPressed: _isRunning ? null : _runCode,
-          ),
-        ],
+        title: const Text('Navoa OS - Retro Noir'),
+        backgroundColor: const Color(0xFF1C1A14),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
-              flex: 2,
-              child: TextField(
-                controller: _codeController,
-                maxLines: null,
-                expands: true,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Código Navoa',
-                  alignLabelWithHint: true,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  border: Border.all(color: const Color(0xFFFFB000)),
+                ),
+                child: ListView.builder(
+                  itemCount: _logs.length,
+                  itemBuilder: (context, index) {
+                    return Text(
+                      _logs[index],
+                      style: const TextStyle(
+                        color: Color(0xFFFFB000),
+                        fontFamily: 'monospace',
+                        fontSize: 16,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              flex: 1,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SingleChildScrollView(
-                  child: Text(
-                    _output.isEmpty ? 'Consola de saída...' : _output,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      color: Colors.greenAccent,
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: const TextStyle(color: Color(0xFFFFB000)),
+                    decoration: const InputDecoration(
+                      hintText: 'digita um comando...',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFFFB000)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFFFB000)),
+                      ),
                     ),
+                    onSubmitted: (_) => _executarComando(),
                   ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFB000),
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: _executarComando,
+                  child: const Text('EXECUTAR'),
+                ),
+              ],
             ),
           ],
         ),
