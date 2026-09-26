@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:navoa_bridge/src/rust/api/interpreter.dart';
-import 'package:navoa_bridge/src/rust/frb_generated.dart';
+import 'src/rust/api/interpreter.dart';
+import 'src/rust/frb_generated.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,10 @@ class NavoaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Navoa OS',
-      theme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF0D0C07),
+      ),
       home: const NavoaScreen(),
     );
   }
@@ -29,12 +32,18 @@ class NavoaScreen extends StatefulWidget {
 }
 
 class _NavoaScreenState extends State<NavoaScreen> {
-  final InterpreterBridge _bridge = InterpreterBridge();
+  late final InterpreterBridge _bridge;
   final TextEditingController _controller = TextEditingController();
   final List<String> _logs = [
     "> SISTEMA OPERACIONAL NAVOA // TERMINAL DE INVESTIGAÇÃO",
     "> Digita 'inspecionar quarto' para começar."
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _bridge = InterpreterBridge();
+  }
 
   void _executarComando() {
     final cmd = _controller.text.trim();
@@ -42,8 +51,12 @@ class _NavoaScreenState extends State<NavoaScreen> {
 
     setState(() {
       _logs.add("> $cmd");
-      final res = _bridge.execute(code: cmd);
-      _logs.add(res);
+      try {
+        final res = _bridge.execute(code: cmd);
+        _logs.add(res);
+      } catch (e) {
+        _logs.add("ERRO: $e");
+      }
       _controller.clear();
     });
   }
@@ -51,7 +64,6 @@ class _NavoaScreenState extends State<NavoaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C07),
       appBar: AppBar(
         title: const Text('Navoa OS - Retro Noir'),
         backgroundColor: const Color(0xFF1C1A14),
@@ -63,6 +75,7 @@ class _NavoaScreenState extends State<NavoaScreen> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(12),
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.black,
                   border: Border.all(color: const Color(0xFFFFB000)),
