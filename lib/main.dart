@@ -39,13 +39,13 @@ class _MainNavigationFlowState extends State<MainNavigationFlow> {
   void _onLanguageSelected(String langCode) {
     setState(() {
       _selectedLang = langCode;
-      _currentStep = 1; // Avança obrigatoriamente para a Introdução Gráfica
+      _currentStep = 1;
     });
   }
 
   void _onStartStudio() {
     setState(() {
-      _currentStep = 2; // Avança para o Terminal/Studio
+      _currentStep = 2;
     });
   }
 
@@ -150,14 +150,38 @@ class IntroGraphicalScreen extends StatelessWidget {
     'pt': {
       'title': '⚡ NAVOA OS // INTRODUÇÃO',
       'sub': 'SISTEMA OPERACIONAL DE INVESTIGAÇÃO',
-      'body': 'Bem-vindo ao ambiente de desenvolvimento Navoa.\n\n• Linguagem nativa multilíngue (PT, EN, ES, FR, IT, DE)\n• Execução de código e variáveis em tempo real\n• Motor de alta performance escrito em Rust\n\nInstruções suportadas em Português:\n> escrever("mensagem") ou imprimir("mensagem")\n> variavel = valor\n> inspecionar quarto',
+      'body': 'Bem-vindo ao ambiente Navoa.\n\n• Linguagem nativa multilíngue (PT, EN, ES, FR, IT, DE)\n• Execução de código e variáveis em tempo real\n• Motor de alta performance em Rust\n\nComandos suportados em Português:\n> escrever("mensagem") ou imprimir("mensagem")\n> variavel = valor\n> inspecionar quarto',
       'btn': 'INICIAR TERMINAL CRT',
     },
     'en': {
       'title': '⚡ NAVOA OS // INTRODUCTION',
       'sub': 'INVESTIGATION OPERATING SYSTEM',
-      'body': 'Welcome to the Navoa development environment.\n\n• Multilingual native language support\n• Real-time code and variable execution\n• High-performance engine built with Rust\n\nCommands supported:\n> print("message")\n> variable = value\n> inspect room',
+      'body': 'Welcome to the Navoa environment.\n\n• Multilingual native language support\n• Real-time code execution\n• High-performance Rust engine\n\nCommands supported:\n> print("message")\n> variable = value\n> inspect room',
       'btn': 'START CRT TERMINAL',
+    },
+    'es': {
+      'title': '⚡ NAVOA OS // INTRODUCCIÓN',
+      'sub': 'SISTEMA OPERATIVO DE INVESTIGACIÓN',
+      'body': 'Bienvenido al entorno Navoa.\n\n• Soporte multilingüe nativo\n• Ejecución de código en tiempo real\n• Motor de alto rendimiento en Rust\n\nComandos soportados:\n> escribir("mensaje")\n> variable = valor\n> inspeccionar habitacion',
+      'btn': 'INICIAR TERMINAL CRT',
+    },
+    'fr': {
+      'title': '⚡ NAVOA OS // INTRODUCTION',
+      'sub': 'SYSTÈME D\'EXPLOITATION D\'ENQUÊTE',
+      'body': 'Bienvenue dans l\'environnement Navoa.\n\n• Support multilingue natif\n• Exécution de code en temps réel\n• Moteur haute performance en Rust\n\nCommandes supportées:\n> ecrire("message")\n> variable = valeur\n> inspecter chambre',
+      'btn': 'DÉMARRER TERMINAL CRT',
+    },
+    'it': {
+      'title': '⚡ NAVOA OS // INTRODUZIONE',
+      'sub': 'SISTEMA OPERATIVO DI INDAGINE',
+      'body': 'Benvenuto nell\'ambiente Navoa.\n\n• Supporto multilingue nativo\n• Esecuzione codice in tempo reale\n• Motore ad alte prestazioni in Rust\n\nComandi supportati:\n> scrivere("messaggio")\n> variabile = valore\n> ispeziona stanza',
+      'btn': 'AVVIA TERMINALE CRT',
+    },
+    'de': {
+      'title': '⚡ NAVOA OS // EINFÜHRUNG',
+      'sub': 'ERMITTLUNGSBETRIEBSSYSTEM',
+      'body': 'Willkommen in der Navoa-Umgebung.\n\n• Mehrsprachige Unterstützung\n• Echtzeit-Codeausführung\n• Hochleistungs-Engine in Rust\n\nUnterstützte Befehle:\n> schreiben("Nachricht")\n> variable = wert\n> raum untersuchen',
+      'btn': 'CRT TERMINAL STARTEN',
     },
   };
 
@@ -176,13 +200,6 @@ class IntroGraphicalScreen extends StatelessWidget {
                 color: const Color(0xFF12110C),
                 border: Border.all(color: const Color(0xFFFFB000), width: 2),
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFFB000).withOpacity(0.15),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  )
-                ],
               ),
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -193,7 +210,7 @@ class IntroGraphicalScreen extends StatelessWidget {
                     langText['title']!,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFFFFB000),
                       fontFamily: 'monospace',
@@ -211,7 +228,7 @@ class IntroGraphicalScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFFFFB000).withOpacity(0.5)),
+                      border: Border.all(color: const Color(0x88FFB000)),
                     ),
                     child: Text(
                       langText['body']!,
@@ -262,7 +279,7 @@ class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<String> _history = [
     '> SISTEMA OPERACIONAL NAVOA // TERMINAL CRT',
-    '> Suporte a comandos em Português ativo.',
+    '> Suporte a comandos nativos ativo.',
     '> Digita \'inspecionar quarto\' ou \'escrever("olá")\' para testar.'
   ];
   final Map<String, String> _variables = {};
@@ -275,8 +292,15 @@ class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
       _history.add('> $cmd');
       _controller.clear();
 
-      // Suporte a escrever("...") / imprimir("...")
-      if ((cmd.startsWith('escrever(') || cmd.startsWith('imprimir(') || cmd.startsWith('println(')) && cmd.endsWith(')')) {
+      final lowerCmd = cmd.toLowerCase();
+
+      if ((lowerCmd.startsWith('escrever(') ||
+          lowerCmd.startsWith('imprimir(') ||
+          lowerCmd.startsWith('println(') ||
+          lowerCmd.startsWith('print(') ||
+          lowerCmd.startsWith('ecrire(') ||
+          lowerCmd.startsWith('scrivere(') ||
+          lowerCmd.startsWith('schreiben(')) && cmd.endsWith(')')) {
         final content = cmd.substring(cmd.indexOf('(') + 1, cmd.lastIndexOf(')')).replaceAll('"', '').replaceAll("'", '');
         if (_variables.containsKey(content)) {
           _history.add('📣 ${_variables[content]}');
@@ -284,27 +308,25 @@ class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
           _history.add('📣 $content');
         }
       } 
-      // Suporte a inspecionar <algo>
-      else if (cmd.startsWith('inspecionar ')) {
-        final target = cmd.substring(12).trim();
-        if (target == 'quarto') {
+      else if (lowerCmd.startsWith('inspecionar ') || lowerCmd.startsWith('inspect ') || lowerCmd.startsWith('ispeziona ') || lowerCmd.startsWith('inspecter ')) {
+        final spaceIdx = cmd.indexOf(' ');
+        final target = cmd.substring(spaceIdx + 1).trim();
+        if (target.toLowerCase() == 'quarto' || target.toLowerCase() == 'room' || target.toLowerCase() == 'chambre') {
           _history.add('🔍 PISTA: O quadro elétrico precisa de energia. Cria a variável \'energia=100\'.');
         } else {
           _history.add('🔍 PISTA: Nada de especial encontrado em \'$target\'.');
         }
       } 
-      // Suporte a atribuição de variáveis (ex: energia=100)
       else if (cmd.contains('=')) {
         final parts = cmd.split('=');
         final varName = parts[0].trim();
         final varVal = parts[1].trim();
         _variables[varName] = varVal;
         _history.add('📦 Variável \'$varName\' definida como $varVal!');
-        if (varName == 'energia' && varVal == '100') {
+        if (varName.toLowerCase() == 'energia' && varVal == '100') {
           _history.add('💡 A energia flui. Os sistemas do quarto ligaram-se.');
         }
       } 
-      // Caso comando não reconhecido
       else {
         _history.add('❓ Comando não reconhecido. Tenta \'escrever("texto")\', \'inspecionar quarto\' ou \'variavel=valor\'.');
       }
@@ -337,13 +359,15 @@ class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 6.0),
-                      style: const TextStyle(
-                        color: Color(0xFFFFB000),
-                        fontFamily: 'monospace',
-                        fontSize: 14,
-                        height: 1.4,
+                      child: Text(
+                        _history[index],
+                        style: const TextStyle(
+                          color: Color(0xFFFFB000),
+                          fontFamily: 'monospace',
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
                       ),
-                      child: Text(_history[index]),
                     );
                   },
                 ),
