@@ -33,34 +33,40 @@ class OnboardingFlow extends StatefulWidget {
 }
 
 class _OnboardingFlowState extends State<OnboardingFlow> {
-  int _step = 0; // 0: Seleção de Idioma, 1: Introdução, 2: Studio
+  final PageController _pageController = PageController();
   String _selectedLangCode = 'pt';
 
   void _selectLanguage(String langCode) {
     setState(() {
       _selectedLangCode = langCode;
-      _step = 1;
     });
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _finishIntro() {
-    setState(() {
-      _step = 2;
-    });
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_step == 0) {
-      return LanguageSelectScreen(onSelect: _selectLanguage);
-    } else if (_step == 1) {
-      return IntroScreen(
-        langCode: _selectedLangCode,
-        onContinue: _finishIntro,
-      );
-    } else {
-      return NavoaStudioScreen(langCode: _selectedLangCode);
-    }
+    return PageView(
+      controller: _pageController,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        LanguageSelectScreen(onSelect: _selectLanguage),
+        IntroScreen(
+          langCode: _selectedLangCode,
+          onContinue: _finishIntro,
+        ),
+        NavoaStudioScreen(langCode: _selectedLangCode),
+      ],
+    );
   }
 }
 
@@ -147,32 +153,32 @@ class IntroScreen extends StatelessWidget {
 
   static const Map<String, Map<String, String>> texts = {
     'pt': {
-      'title': 'INTRODUÇÃO AO NAVOA',
+      'title': 'INTRODUÇÃO AO NAVOA OS',
       'body': 'Bem-vindo ao Navoa Studio.\n\nLinguagem educacional com motor em Rust para investigação e programação. Escreva os seus scripts e execute em tempo real.',
       'btn': 'INICIAR STUDIO',
     },
     'en': {
-      'title': 'INTRODUCTION TO NAVOA',
+      'title': 'INTRODUCTION TO NAVOA OS',
       'body': 'Welcome to Navoa Studio.\n\nEducational programming language with a Rust engine for investigation and coding. Write your scripts and execute in real-time.',
       'btn': 'START STUDIO',
     },
     'es': {
-      'title': 'INTRODUCCIÓN A NAVOA',
-      'body': 'Bienvenido a Navoa Studio.\n\nLenguaje educativo con motor en Rust para investigación y programación. Escriba sus scripts y ejecute en tiempo real.',
+      'title': 'INTRODUCCIÓN A NAVOA OS',
+      'body': 'Bienvenido a Navoa Studio.\n\nLenguaje educativo con motor en Rust para investigación y programación. Escriba sus scripts y ejecútelos en tiempo real.',
       'btn': 'INICIAR STUDIO',
     },
     'fr': {
-      'title': 'INTRODUCTION À NAVOA',
+      'title': 'INTRODUCTION À NAVOA OS',
       'body': 'Bienvenue dans Navoa Studio.\n\nLangage éducatif propulsé par Rust pour l\'investigation et la programmation. Écrivez vos scripts et exécutez-les en temps réel.',
       'btn': 'DÉMARRER STUDIO',
     },
     'it': {
-      'title': 'INTRODUZIONE A NAVOA',
+      'title': 'INTRODUZIONE A NAVOA OS',
       'body': 'Benvenuto in Navoa Studio.\n\nLinguaggio educativo con motore Rust per l\'investigazione e la programmazione. Scrivi i tuoi script ed esegui in tempo reale.',
       'btn': 'AVVIA STUDIO',
     },
     'de': {
-      'title': 'EINFÜHRUNG IN NAVOA',
+      'title': 'EINFÜHRUNG IN NAVOA OS',
       'body': 'Willkommen bei Navoa Studio.\n\nPädagogische Programmiersprache mit Rust-Engine für Recherchen und Programmierung. Schreiben und ausführen in Echtzeit.',
       'btn': 'STUDIO STARTEN',
     },
@@ -183,52 +189,65 @@ class IntroScreen extends StatelessWidget {
     final langText = texts[langCode] ?? texts['pt']!;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              langText['title']!,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFFFB000),
-                fontFamily: 'monospace',
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    langText['title']!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFFB000),
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFFFB000), width: 1.5),
+                    ),
+                    child: Text(
+                      langText['body']!,
+                      style: const TextStyle(
+                        color: Color(0xFFFFB000),
+                        fontFamily: 'monospace',
+                        fontSize: 15,
+                        height: 1.6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFB000),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    onPressed: onContinue,
+                    child: Text(
+                      langText['btn']!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(color: const Color(0xFFFFB000)),
-              ),
-              child: Text(
-                langText['body']!,
-                style: const TextStyle(
-                  color: Color(0xFFFFB000),
-                  fontFamily: 'monospace',
-                  fontSize: 15,
-                  height: 1.5,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFB000),
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              onPressed: onContinue,
-              child: Text(
-                langText['btn']!,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
