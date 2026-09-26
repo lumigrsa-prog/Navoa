@@ -1,76 +1,38 @@
-name: Build Navoa Multiplatform App
+name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout do código
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configurar Java JDK
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
 
-      - name: Configurar Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
-
-      - name: Configurar Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.19.x'
           channel: 'stable'
+          cache: true
 
-      - name: Gerar pasta nativa Android (se não existir)
-        run: |
-          if [ ! -d "android" ]; then
-            flutter create --platforms=android --org com.navoa .
-          fi
-
-      - name: Ajustar minSdkVersion para 21 no Gradle
-        run: |
-          sed -i 's/minSdkVersion .*/minSdkVersion 21/' android/app/build.gradle || true
-          sed -i 's/minSdkVersion = .*/minSdkVersion = 21/' android/app/build.gradle.kts || true
-
-      - name: Configurar dependências do Flutter
-        run: |
-          flutter pub add flutter_rust_bridge:^2.13.0
-          flutter pub get
-
-      - name: Instalar ferramentas Rust (cargo-binstall, frb, cargo-ndk, cargo-expand)
-        run: |
-          curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-          ~/.cargo/bin/cargo-binstall flutter_rust_bridge_codegen@^2.0.0 -y
-          ~/.cargo/bin/cargo-binstall cargo-ndk -y
-          ~/.cargo/bin/cargo-binstall cargo-expand -y
-          rustup toolchain install nightly --profile minimal
-
-      - name: Gerar Bindings do Rust para Flutter
-        run: ~/.cargo/bin/flutter_rust_bridge_codegen generate --rust-root rust/ --rust-input crate::api --dart-output lib/src/rust/
-
-      - name: Compilar bibliotecas Rust (.so) para Android
-        run: |
-          mkdir -p android/app/src/main/jniLibs
-          NDK_PATH=$(ls -d $ANDROID_HOME/ndk/* | tail -n 1)
-          ANDROID_NDK_HOME=$NDK_PATH ~/.cargo/bin/cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -o android/app/src/main/jniLibs build --release --manifest-path rust/Cargo.toml
-
-      - name: Atualizar dependências do Flutter após geração dos bindings
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Compilar APK Android
-        run: flutter build apk --release --verbose --no-tree-shake-icons
+      - name: Build APK (Release)
+        run: flutter build apk --release
 
-      - name: Guardar APK como Artefacto
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Navoa-Android-APK
+          name: navoa-apk
           path: build/app/outputs/flutter-apk/app-release.apk
