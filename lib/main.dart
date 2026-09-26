@@ -14,59 +14,53 @@ class NavoaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Navoa Studio',
+      title: 'Navoa OS - Retro Noir',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF0D0C07),
         primaryColor: const Color(0xFFFFB000),
       ),
-      home: const OnboardingFlow(),
+      home: const MainNavigationFlow(),
     );
   }
 }
 
-class OnboardingFlow extends StatefulWidget {
-  const OnboardingFlow({super.key});
+class MainNavigationFlow extends StatefulWidget {
+  const MainNavigationFlow({super.key});
 
   @override
-  State<OnboardingFlow> createState() => _OnboardingFlowState();
+  State<MainNavigationFlow> createState() => _MainNavigationFlowState();
 }
 
-class _OnboardingFlowState extends State<OnboardingFlow> {
-  final PageController _pageController = PageController();
-  String _selectedLangCode = 'pt';
+class _MainNavigationFlowState extends State<MainNavigationFlow> {
+  int _currentStep = 0; // 0: Idiomas, 1: Introdução Gráfica, 2: Terminal
+  String _selectedLang = 'pt';
 
-  void _selectLanguage(String langCode) {
+  void _onLanguageSelected(String langCode) {
     setState(() {
-      _selectedLangCode = langCode;
+      _selectedLang = langCode;
+      _currentStep = 1; // Avança obrigatoriamente para a Introdução Gráfica
     });
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
   }
 
-  void _finishIntro() {
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+  void _onStartStudio() {
+    setState(() {
+      _currentStep = 2; // Avança para o Terminal/Studio
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      controller: _pageController,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        LanguageSelectScreen(onSelect: _selectLanguage),
-        IntroScreen(
-          langCode: _selectedLangCode,
-          onContinue: _finishIntro,
-        ),
-        NavoaStudioScreen(langCode: _selectedLangCode),
-      ],
-    );
+    if (_currentStep == 0) {
+      return LanguageSelectScreen(onSelect: _onLanguageSelected);
+    } else if (_currentStep == 1) {
+      return IntroGraphicalScreen(
+        langCode: _selectedLang,
+        onContinue: _onStartStudio,
+      );
+    } else {
+      return NavoaTerminalScreen(langCode: _selectedLang);
+    }
   }
 }
 
@@ -88,48 +82,49 @@ class LanguageSelectScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
           child: Container(
-            padding: const EdgeInsets.all(24),
             constraints: const BoxConstraints(maxWidth: 400),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.terminal, size: 56, color: Color(0xFFFFB000)),
+                const Icon(Icons.terminal, size: 64, color: Color(0xFFFFB000)),
                 const SizedBox(height: 16),
                 const Text(
                   'NAVOA OS',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFFFB000),
                     fontFamily: 'monospace',
+                    letterSpacing: 2,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Selecione o idioma / Select language',
+                  'SELECIONE O IDIOMA / SELECT LANGUAGE',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
+                  style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'monospace'),
                 ),
                 const SizedBox(height: 24),
                 for (var lang in languages) ...[
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFFFFB000),
-                      side: const BorderSide(color: Color(0xFFFFB000)),
+                      side: const BorderSide(color: Color(0xFFFFB000), width: 1.5),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () => onSelect(lang['code']!),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(lang['flag']!, style: const TextStyle(fontSize: 18)),
-                        const SizedBox(width: 10),
+                        Text(lang['flag']!, style: const TextStyle(fontSize: 20)),
+                        const SizedBox(width: 12),
                         Text(
                           lang['label']!,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
                         ),
                       ],
                     ),
@@ -145,42 +140,24 @@ class LanguageSelectScreen extends StatelessWidget {
   }
 }
 
-class IntroScreen extends StatelessWidget {
+class IntroGraphicalScreen extends StatelessWidget {
   final String langCode;
   final VoidCallback onContinue;
 
-  const IntroScreen({super.key, required this.langCode, required this.onContinue});
+  const IntroGraphicalScreen({super.key, required this.langCode, required this.onContinue});
 
   static const Map<String, Map<String, String>> texts = {
     'pt': {
-      'title': 'INTRODUÇÃO AO NAVOA OS',
-      'body': 'Bem-vindo ao Navoa Studio.\n\nLinguagem educacional com motor em Rust para investigação e programação. Escreva os seus scripts e execute em tempo real.',
-      'btn': 'INICIAR STUDIO',
+      'title': '⚡ NAVOA OS // INTRODUÇÃO',
+      'sub': 'SISTEMA OPERACIONAL DE INVESTIGAÇÃO',
+      'body': 'Bem-vindo ao ambiente de desenvolvimento Navoa.\n\n• Linguagem nativa multilíngue (PT, EN, ES, FR, IT, DE)\n• Execução de código e variáveis em tempo real\n• Motor de alta performance escrito em Rust\n\nInstruções suportadas em Português:\n> escrever("mensagem") ou imprimir("mensagem")\n> variavel = valor\n> inspecionar quarto',
+      'btn': 'INICIAR TERMINAL CRT',
     },
     'en': {
-      'title': 'INTRODUCTION TO NAVOA OS',
-      'body': 'Welcome to Navoa Studio.\n\nEducational programming language with a Rust engine for investigation and coding. Write your scripts and execute in real-time.',
-      'btn': 'START STUDIO',
-    },
-    'es': {
-      'title': 'INTRODUCCIÓN A NAVOA OS',
-      'body': 'Bienvenido a Navoa Studio.\n\nLenguaje educativo con motor en Rust para investigación y programación. Escriba sus scripts y ejecútelos en tiempo real.',
-      'btn': 'INICIAR STUDIO',
-    },
-    'fr': {
-      'title': 'INTRODUCTION À NAVOA OS',
-      'body': 'Bienvenue dans Navoa Studio.\n\nLangage éducatif propulsé par Rust pour l\'investigation et la programmation. Écrivez vos scripts et exécutez-les en temps réel.',
-      'btn': 'DÉMARRER STUDIO',
-    },
-    'it': {
-      'title': 'INTRODUZIONE A NAVOA OS',
-      'body': 'Benvenuto in Navoa Studio.\n\nLinguaggio educativo con motore Rust per l\'investigazione e la programmazione. Scrivi i tuoi script ed esegui in tempo reale.',
-      'btn': 'AVVIA STUDIO',
-    },
-    'de': {
-      'title': 'EINFÜHRUNG IN NAVOA OS',
-      'body': 'Willkommen bei Navoa Studio.\n\nPädagogische Programmiersprache mit Rust-Engine für Recherchen und Programmierung. Schreiben und ausführen in Echtzeit.',
-      'btn': 'STUDIO STARTEN',
+      'title': '⚡ NAVOA OS // INTRODUCTION',
+      'sub': 'INVESTIGATION OPERATING SYSTEM',
+      'body': 'Welcome to the Navoa development environment.\n\n• Multilingual native language support\n• Real-time code and variable execution\n• High-performance engine built with Rust\n\nCommands supported:\n> print("message")\n> variable = value\n> inspect room',
+      'btn': 'START CRT TERMINAL',
     },
   };
 
@@ -192,42 +169,61 @@ class IntroScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(20.0),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints: const BoxConstraints(maxWidth: 420),
+              decoration: BoxDecoration(
+                color: const Color(0xFF12110C),
+                border: Border.all(color: const Color(0xFFFFB000), width: 2),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFFB000).withOpacity(0.15),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  )
+                ],
+              ),
+              padding: const EdgeInsets.all(20),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
                     langText['title']!,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFFFFB000),
                       fontFamily: 'monospace',
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 4),
+                  Text(
+                    langText['sub']!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.grey, fontSize: 11, fontFamily: 'monospace'),
+                  ),
+                  const Divider(color: Color(0xFFFFB000), height: 24, thickness: 1),
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFFFB000), width: 1.5),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFFFFB000).withOpacity(0.5)),
                     ),
                     child: Text(
                       langText['body']!,
                       style: const TextStyle(
                         color: Color(0xFFFFB000),
                         fontFamily: 'monospace',
-                        fontSize: 15,
-                        height: 1.6,
+                        fontSize: 13,
+                        height: 1.5,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFB000),
@@ -238,7 +234,7 @@ class IntroScreen extends StatelessWidget {
                     child: Text(
                       langText['btn']!,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'monospace',
                       ),
@@ -254,39 +250,63 @@ class IntroScreen extends StatelessWidget {
   }
 }
 
-class NavoaStudioScreen extends StatefulWidget {
+class NavoaTerminalScreen extends StatefulWidget {
   final String langCode;
-  const NavoaStudioScreen({super.key, required this.langCode});
+  const NavoaTerminalScreen({super.key, required this.langCode});
 
   @override
-  State<NavoaStudioScreen> createState() => _NavoaStudioScreenState();
+  State<NavoaTerminalScreen> createState() => _NavoaTerminalScreenState();
 }
 
-class _NavoaStudioScreenState extends State<NavoaStudioScreen> {
-  late final InterpreterBridge _bridge;
-  final TextEditingController _codeController = TextEditingController(text: 'println("Olá, Navoa!");');
-  String _output = '';
+class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
+  final TextEditingController _controller = TextEditingController();
+  final List<String> _history = [
+    '> SISTEMA OPERACIONAL NAVOA // TERMINAL CRT',
+    '> Suporte a comandos em Português ativo.',
+    '> Digita \'inspecionar quarto\' ou \'escrever("olá")\' para testar.'
+  ];
+  final Map<String, String> _variables = {};
 
-  @override
-  void initState() {
-    super.initState();
-    _bridge = InterpreterBridge();
-  }
-
-  void _runCode() {
-    final code = _codeController.text.trim();
-    if (code.isEmpty) return;
+  void _executeCommand() {
+    final cmd = _controller.text.trim();
+    if (cmd.isEmpty) return;
 
     setState(() {
-      try {
-        final res = _bridge.execute(code: code);
-        if (code.startsWith('println("') && code.endsWith('");')) {
-          _output = code.substring(9, code.length - 3);
+      _history.add('> $cmd');
+      _controller.clear();
+
+      // Suporte a escrever("...") / imprimir("...")
+      if ((cmd.startsWith('escrever(') || cmd.startsWith('imprimir(') || cmd.startsWith('println(')) && cmd.endsWith(')')) {
+        final content = cmd.substring(cmd.indexOf('(') + 1, cmd.lastIndexOf(')')).replaceAll('"', '').replaceAll("'", '');
+        if (_variables.containsKey(content)) {
+          _history.add('📣 ${_variables[content]}');
         } else {
-          _output = res;
+          _history.add('📣 $content');
         }
-      } catch (e) {
-        _output = 'ERRO: $e';
+      } 
+      // Suporte a inspecionar <algo>
+      else if (cmd.startsWith('inspecionar ')) {
+        final target = cmd.substring(12).trim();
+        if (target == 'quarto') {
+          _history.add('🔍 PISTA: O quadro elétrico precisa de energia. Cria a variável \'energia=100\'.');
+        } else {
+          _history.add('🔍 PISTA: Nada de especial encontrado em \'$target\'.');
+        }
+      } 
+      // Suporte a atribuição de variáveis (ex: energia=100)
+      else if (cmd.contains('=')) {
+        final parts = cmd.split('=');
+        final varName = parts[0].trim();
+        final varVal = parts[1].trim();
+        _variables[varName] = varVal;
+        _history.add('📦 Variável \'$varName\' definida como $varVal!');
+        if (varName == 'energia' && varVal == '100') {
+          _history.add('💡 A energia flui. Os sistemas do quarto ligaram-se.');
+        }
+      } 
+      // Caso comando não reconhecido
+      else {
+        _history.add('❓ Comando não reconhecido. Tenta \'escrever("texto")\', \'inspecionar quarto\' ou \'variavel=valor\'.');
       }
     });
   }
@@ -295,79 +315,74 @@ class _NavoaStudioScreenState extends State<NavoaStudioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Navoa Studio'),
-        backgroundColor: const Color(0xFF1C1A14),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.play_arrow, color: Colors.greenAccent),
-            onPressed: _runCode,
-          )
-        ],
+        title: const Text('Navoa OS - Retro Noir', style: TextStyle(fontFamily: 'monospace', fontSize: 16)),
+        backgroundColor: const Color(0xFF181610),
+        elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
             Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF151410),
-                  border: Border.all(color: Colors.grey.shade800),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Código Navoa', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _codeController,
-                        maxLines: null,
-                        expands: true,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'monospace',
-                          fontSize: 16,
-                        ),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              flex: 2,
               child: Container(
                 width: double.infinity,
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFFB000)),
+                  border: Border.all(color: const Color(0xFFFFB000), width: 1.5),
                 ),
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Resultado:', style: TextStyle(color: Color(0xFFFFB000), fontFamily: 'monospace')),
-                    const SizedBox(height: 8),
-                    Text(
-                      _output,
+                child: ListView.builder(
+                  itemCount: _history.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6.0),
                       style: const TextStyle(
                         color: Color(0xFFFFB000),
                         fontFamily: 'monospace',
-                        fontSize: 16,
+                        fontSize: 14,
+                        height: 1.4,
                       ),
-                    ),
-                  ],
+                      child: Text(_history[index]),
+                    );
+                  },
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.horizontal(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF151410),
+                      border: Border.all(color: const Color(0xFFFFB000)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      style: const TextStyle(color: Color(0xFFFFB000), fontFamily: 'monospace'),
+                      decoration: const InputDecoration(
+                        hintText: 'digita um comando...',
+                        hintStyle: TextStyle(color: Colors.grey, fontFamily: 'monospace'),
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (_) => _executeCommand(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFB000),
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  ),
+                  onPressed: _executeCommand,
+                  child: const Text('EXECUTAR', style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+                ),
+              ],
             ),
           ],
         ),
