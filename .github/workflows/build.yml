@@ -25,10 +25,13 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Recreate Android native files (v2 embedding)
+      - name: Ensure Android platform exists without overwriting code
         run: |
-          rm -rf android
-          flutter create . --platforms=android --project-name=navoa
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --project-name=navoa
+          else
+            echo "Android folder already exists."
+          fi
 
       - name: Install dependencies
         run: flutter pub get
