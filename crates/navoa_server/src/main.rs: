@@ -1,0 +1,45 @@
+use navoa_core::NavoaEngine;
+use tiny_http::{Server, Response, Header};
+
+fn main() {
+    let server = Server::http("0.0.0.0:8080").unwrap();
+    println!("🏠 Servidor visual do Navoa a correr em: http://localhost:8080");
+    println!("Podes abrir este endereço no browser do teu telemóvel!");
+
+    let mut engine = NavoaEngine::new();
+
+    for request in server.incoming_requests() {
+        let url = request.url().to_string();
+        
+        if url.starts_with("/exec?cmd=") {
+            // Decodificar o comando enviado pela interface web
+            let encoded_cmd = &url[10..];
+            let cmd = urlencoding_decode(encoded_cmd);
+            
+            let output = engine.execute(&cmd);
+            let challenge_done = engine.config.challenge_completed;
+            
+            // Responder com JSON contendo o resultado e se a luz acendeu
+            let json_response = format!(
+                r#"{{"output": "{}", "lightOn": {}}}"#,
+                output.replace('\n', "\\n").replace('"', "\\\""),
+                challenge_done
+            );
+
+            let header = Header::from_bytes(&b"Content-Type"[..], &b"application/json"[..]).unwrap();
+            let response = Response::from_string(json_response).with_header(header);
+            let _ = request.respond(response);
+        } else {
+            // Servir a interface HTML/CSS/JS bonita do Apartamento do Navoa
+            let html = get_html_ui(engine.config.challenge_completed);
+            let header = Header::from_bytes(&b"Content-Type"[..], &b"text/html; charset=utf-8"[..]).unwrap();
+            let response = Response::from_string(html).with_header(header);
+            let _ = request.respond(response);
+        }
+    }
+}
+
+// Função auxiliar simples para descodificar URLs
+fn urlencoding_decode(s: &str) -> String {
+    percent_encoding::percent_decode_str(s).decode_utf8_lossy().into_owned()
+}

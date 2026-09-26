@@ -3,5 +3,5 @@ members = [
     "crates/navoa_core",
     "crates/navoa_cli",
     "rust"
-]
+, "crates/navoa_server"]
 resolver = "2"

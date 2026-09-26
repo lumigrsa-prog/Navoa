@@ -1,0 +1,8 @@
+[package]
+name = "navoa_server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+navoa_core = { path = "../navoa_core" }
+tiny_http = "0.12"
