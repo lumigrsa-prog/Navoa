@@ -26,7 +26,7 @@ jobs:
       - name: Recriar pasta Android
         run: |
           rm -rf android
-          flutter create .
+          flutter create --project-name navoa .
 
       - run: flutter pub get
       - run: flutter build apk --release
