@@ -105,12 +105,11 @@ class IntroScreen extends StatelessWidget {
   final String lang;
   const IntroScreen({super.key, required this.lang});
 
-  @Companion()
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NAVOA // INTRO') ,
+        title: const Text('NAVOA // INTRO'),
         backgroundColor: Colors.black,
       ),
       body: Padding(
@@ -184,7 +183,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
   }
 
   void _exitToMenu() {
-    // Agora o botão SAIR redireciona diretamente para o terminal/consola de programação
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const TerminalScreen()),
@@ -228,7 +226,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
       ),
       body: Column(
         children: [
-          // Painel central de narrativa fixa no topo
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12.0),
@@ -243,7 +240,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
             ),
           ),
           const Divider(color: Colors.greenAccent, height: 1),
-          // Área de logs / consola
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(8.0),
@@ -259,7 +255,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
               },
             ),
           ),
-          // Caixa de texto de comandos
           Container(
             padding: const EdgeInsets.all(8.0),
             color: Colors.black,
