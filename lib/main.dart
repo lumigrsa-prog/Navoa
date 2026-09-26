@@ -182,6 +182,7 @@ class TerminalScreen extends StatefulWidget {
 
 class _TerminalScreenState extends State<TerminalScreen> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   int currentChapter = 1;
   int stepInChapter = 0;
   bool chapterCompleted = false;
@@ -194,17 +195,27 @@ class _TerminalScreenState extends State<TerminalScreen> {
     'Digite o primeiro comando:\n'
   ];
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   void _handleCommand(String input) {
     setState(() {
+      // Limpeza profunda de espaços e caracteres invisíveis
+      String cmd = input.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
       _history.add('> $input');
-      String cmd = input.trim().toLowerCase();
 
       if (cmd == 'ajuda') {
-        _history.add('Comandos: progresso, reiniciar, limpar, sair');
+        _history.add('Comandos disponíveis: progresso, reiniciar, limpar, sair');
+        _focusNode.requestFocus();
         return;
       }
       if (cmd == 'limpar') {
         _history.clear();
+        _focusNode.requestFocus();
         return;
       }
       if (cmd == 'sair') {
@@ -233,9 +244,21 @@ class _TerminalScreenState extends State<TerminalScreen> {
         } else {
           _history.add('[Erro] Comando inválido para este passo. Digite "ajuda".');
         }
+      } else if (currentChapter == 2) {
+        if (stepInChapter == 0 && (cmd == 'varrer madragoa' || (cmd.contains('varrer') && cmd.contains('madrag')))) {
+          _history.add('[OK] Área varrida com sucesso. Comando 2: analisar ruelas');
+          stepInChapter++;
+        } else if (stepInChapter == 1 && cmd == 'analisar ruelas') {
+          _history.add('\n*** CAPÍTULO 2 CONCLUÍDO! O caso avança nas brumas de Lisboa. ***\n');
+          chapterCompleted = true;
+        } else {
+          _history.add('[Erro] Escreva exatamente: varrer madragoa');
+        }
       }
     });
     _controller.clear();
+    // Mantém sempre o foco ativo no campo de texto após submeter
+    FocusScope.of(context).requestFocus(_focusNode);
   }
 
   @override
@@ -270,6 +293,8 @@ class _TerminalScreenState extends State<TerminalScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focusNode,
+                    autofocus: true,
                     style: const TextStyle(color: green, fontFamily: 'monospace'),
                     decoration: const InputDecoration(border: InputBorder.none, hintText: 'comando...'),
                     onSubmitted: _handleCommand,
