@@ -1,18 +1,20 @@
-use navoa_core::Interpreter;
+use flutter_rust_bridge::frb;
+use navoa_core::NavoaEngine;
 
-pub struct NavoaSession {
-    interpreter: Interpreter,
+pub struct InterpreterBridge {
+    engine: NavoaEngine,
 }
 
-impl NavoaSession {
+impl InterpreterBridge {
     #[frb(sync)]
     pub fn new() -> Self {
         Self {
-            interpreter: Interpreter::new(),
+            engine: NavoaEngine::new(),
         }
     }
 
-    pub fn execute_code(&mut self, code: String) -> String {
-        self.interpreter.execute(&code)
+    #[frb(sync)]
+    pub fn execute(&mut self, code: String) -> String {
+        self.engine.execute(&code)
     }
 }

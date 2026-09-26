@@ -4,7 +4,7 @@ use tiny_http::{Server, Response, Header};
 fn main() {
     let port = 8080;
     let server = Server::http(format!("0.0.0.0:{}", port)).unwrap();
-    println!("✨ Servidor Gráfico ativo em http://localhost:8080");
+    println!("🕵️  Navoa OS - Terminal Retro Noir ativo em http://localhost:{}", port);
 
     for mut request in server.incoming_requests() {
         let url = request.url().to_string();
@@ -35,26 +35,27 @@ fn main() {
 
 fn get_html_ui(chapter: u32, completed: bool) -> String {
     let (title, desc) = if completed {
-        ("🏆 CONCLUÍDO", "🎉 <b>AVENTURA FINALIZADA COM SUCESSO!</b><br>O Navoa está livre nas ruas de Lisboa. Todos os desafios de programação foram superados com distinção.")
+        ("🏆 INVESTIGAÇÃO CONCLUÍDA", "PARABÉNS, DETETIVE. O Navoa ultrapassou todos os obstáculos e libertou-se na noite de Lisboa.")
     } else {
         match chapter {
-            1 => ("Cap. 1: O Despertar", "🛏️ Usa <b>inspecionar quarto</b> para procurar pistas."),
-            2 => ("Cap. 2: A Máquina", "☕ Usa <b>inspecionar maquina</b>. Vais precisar de aprender condições (SE)."),
-            3 => ("Cap. 3: O Cofre", "🔐 Usa <b>inspecionar cofre</b>. Vais precisar de usar um CICLO para rodar a fechadura."),
-            4 => ("Cap. 4: A Análise", "📊 Usa <b>inspecionar sistema</b>. Avalia os riscos."),
-            5 => ("Cap. 5: A Saída", "🚪 Usa <b>inspecionar porta</b>. É a última barreira."),
-            _ => ("Erro", "Erro.")
+            1 => ("CAP. 1: O DESPERTAR", "🛏️ Quarto escuro. Inspeciona o quarto com 'inspecionar quarto' para restaurar a energia."),
+            2 => ("CAP. 2: O CAFÉ NOIR", "☕ Inspeciona a máquina com 'inspecionar maquina' para entender a condição SE."),
+            3 => ("CAP. 3: O COFRE SECRETO", "🔐 Inspeciona o cofre com 'inspecionar cofre' para desativar a tranca com REPETIR."),
+            4 => ("CAP. 4: ANÁLISE DE RISCO", "📊 Inspeciona o sistema com 'inspecionar sistema' para avaliar as ameaças."),
+            5 => ("CAP. 5: A FUGA DE LISBOA", "🚪 Inspeciona a porta com 'inspecionar porta' para abrir a passagem final."),
+            _ => ("ERRO DE SISTEMA", "Ficheiro corrompido.")
         }
     };
 
     let controls = if completed {
         r#"<div class="input-row">
-            <button class="btn-close" onclick="closeSession()">Fechar Aventura</button>
+            <button class="btn-close" onclick="closeSession()">[ X ] FECHAR SESSÃO</button>
         </div>"#.to_string()
     } else {
         r#"<div class="input-row">
-            <input type="text" id="cmdInput" placeholder="Comando..." autofocus autocomplete="off">
-            <button onclick="sendCmd()">Executar</button>
+            <span class="prompt-symbol">&gt;</span>
+            <input type="text" id="cmdInput" placeholder="digita um comando..." autofocus autocomplete="off">
+            <button onclick="sendCmd()">EXECUTAR</button>
         </div>"#.to_string()
     };
 
@@ -64,32 +65,190 @@ fn get_html_ui(chapter: u32, completed: bool) -> String {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navoa OS - {}</title>
+    <title>Navoa OS - Retro Noir</title>
     <style>
-        body {{ background: #0f111a; color: #fff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }}
-        .container {{ width: 90%; max-width: 600px; background: #1a1c29; border-radius: 8px; padding: 24px; border: 1px solid #333; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }}
-        .header {{ margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }}
-        .badge {{ background: #22c55e; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }}
-        .story-text {{ background: #11131d; padding: 12px; border-left: 4px solid #6366f1; margin-bottom: 15px; font-size: 14px; line-height: 1.5; }}
-        .terminal-box {{ background: #000; border-radius: 4px; padding: 12px; text-align: left; height: 150px; overflow-y: auto; color: #4ade80; margin-bottom: 15px; border: 1px solid #222; }}
-        .input-row {{ display: flex; gap: 10px; }}
-        input {{ flex: 1; background: #000; border: 1px solid #4ade80; border-radius: 4px; padding: 12px; color: #4ade80; font-family: monospace; outline: none; }}
-        button {{ background: #4ade80; color: #000; font-weight: bold; border: none; padding: 0 20px; border-radius: 4px; cursor: pointer; font-family: monospace; }}
-        button:hover {{ opacity: 0.9; }}
-        .btn-close {{ background: #ef4444; color: #fff; width: 100%; padding: 14px; font-size: 15px; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: center; border: none; }}
-        .btn-close:hover {{ background: #dc2626; }}
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        * {{
+            box-sizing: border-box;
+        }}
+
+        body {{
+            background-color: #050507;
+            color: #ffb000;
+            font-family: 'VT323', 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            overflow: hidden;
+            text-shadow: 0 0 4px rgba(255, 176, 0, 0.7);
+        }}
+
+        /* Efeito de Vidro CRT e Ecrã Curvo */
+        .crt-monitor {{
+            width: 100%;
+            max-width: 680px;
+            background: #0d0c07;
+            border: 12px solid #1c1a14;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 176, 0, 0.15);
+            position: relative;
+            animation: crtFlicker 0.15s infinite alternate;
+        }}
+
+        /* Overlay de Linhas de Varrimento (Scanlines) */
+        .crt-monitor::before {{
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 11, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0.7;
+            border-radius: 8px;
+        }}
+
+        .header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #ffb000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 22px;
+            letter-spacing: 1px;
+        }}
+
+        .badge {{
+            background: #ffb000;
+            color: #0d0c07;
+            padding: 2px 8px;
+            font-weight: bold;
+            font-size: 18px;
+        }}
+
+        .story-text {{
+            background: rgba(255, 176, 0, 0.05);
+            border: 1px solid rgba(255, 176, 0, 0.3);
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            line-height: 1.4;
+        }}
+
+        .terminal-box {{
+            background: #070604;
+            border: 1px solid #ffb000;
+            padding: 12px;
+            height: 180px;
+            overflow-y: auto;
+            font-size: 19px;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            color: #ffc84d;
+        }}
+
+        .input-row {{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }}
+
+        .prompt-symbol {{
+            font-size: 24px;
+            font-weight: bold;
+        }}
+
+        input {{
+            flex: 1;
+            background: #000;
+            border: 1px solid #ffb000;
+            padding: 10px;
+            color: #ffb000;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            outline: none;
+            text-shadow: 0 0 5px rgba(255, 176, 0, 0.8);
+        }}
+
+        input:focus {{
+            box-shadow: 0 0 8px rgba(255, 176, 0, 0.6);
+        }}
+
+        button {{
+            background: #ffb000;
+            color: #0d0c07;
+            border: none;
+            padding: 10px 18px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }}
+
+        button:hover {{
+            background: #ffe082;
+            box-shadow: 0 0 10px rgba(255, 176, 0, 0.8);
+        }}
+
+        .btn-close {{
+            background: #d32f2f;
+            color: #fff;
+            width: 100%;
+            padding: 12px;
+            font-size: 22px;
+            border: 1px solid #ff6666;
+            cursor: pointer;
+            text-align: center;
+        }}
+
+        .btn-close:hover {{
+            background: #b71c1c;
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.8);
+        }}
+
+        /* Animação de tremor CRT discreto */
+        @keyframes crtFlicker {{
+            0% {{ opacity: 0.97; }}
+            100% {{ opacity: 1; }}
+        }}
+
+        /* Scrollbar Retro */
+        ::-webkit-scrollbar {{
+            width: 8px;
+        }}
+        ::-webkit-scrollbar-track {{
+            background: #070604;
+        }}
+        ::-webkit-scrollbar-thumb {{
+            background: #ffb000;
+        }}
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="crt-monitor">
         <div class="header">
-            <h2>{}</h2>
+            <span>SYS.NAVOA v1.0 // {}</span>
             {}
         </div>
+        
         <div class="story-text">{}</div>
-        <div class="terminal-box" id="term">> Terminal Navoa online...<br>{}</div>
+        
+        <div class="terminal-box" id="term">
+            > SISTEMA OPERACIONAL NAVOA // TERMINAL DE INVESTIGAÇÃO<br>
+            {}
+        </div>
+
         {}
     </div>
+
     <script>
         const currentChapter = {};
         const input = document.getElementById('cmdInput');
@@ -102,7 +261,7 @@ fn get_html_ui(chapter: u32, completed: bool) -> String {
             const cmd = input.value.trim();
             if (!cmd) return;
             const term = document.getElementById('term');
-            term.innerHTML += `<br><span style="color:#fff">> ${{cmd}}</span>`;
+            term.innerHTML += `<br><span style="color:#ffffff">&gt; ${{cmd}}</span>`;
 
             fetch('/api/exec', {{ method: 'POST', body: cmd }})
             .then(res => res.json())
@@ -112,24 +271,23 @@ fn get_html_ui(chapter: u32, completed: bool) -> String {
                 input.value = '';
 
                 if (data.completed || data.chapter !== currentChapter) {{
-                    setTimeout(() => location.reload(), 1500);
+                    setTimeout(() => location.reload(), 1400);
                 }}
             }});
         }}
 
         function closeSession() {{
+            alert('Sessão encerrada com sucesso.');
             window.close();
-            alert('Aventura concluída! Podes fechar este separador do browser.');
         }}
     </script>
 </body>
 </html>
 "#, 
     title,
-    title,
-    if completed { r#"<span class="badge">FINALIZADO</span>"# } else { "" },
+    if completed { r#"<span class="badge">RESOLVIDO</span>"# } else { "" },
     desc,
-    if completed { "> 🏆 ESTADO: SISTEMA TOTALMENTE OPERACIONAL." } else { "> Dica: Se não sabes o que fazer, inspeciona as coisas." },
+    if completed { "> REGISTO: CASO FECHADO COM SUCESSO." } else { "> DICA: Digita 'inspecionar <objeto>' para investigar o cenário." },
     controls,
     chapter
 )
