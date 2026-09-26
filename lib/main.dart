@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const NavoaApp());
 }
 
@@ -11,397 +10,354 @@ class NavoaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Navoa OS - Retro Noir',
+      title: 'Navoa OS',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0D0C07),
-        primaryColor: const Color(0xFFFFB000),
+        scaffoldBackgroundColor: Colors.black,
+        primaryColor: Colors.greenAccent,
       ),
-      home: const MainNavigationFlow(),
+      home: const LanguageSelectScreen(),
     );
   }
 }
 
-class MainNavigationFlow extends StatefulWidget {
-  const MainNavigationFlow({super.key});
-
-  @override
-  State<MainNavigationFlow> createState() => _MainNavigationFlowState();
-}
-
-class _MainNavigationFlowState extends State<MainNavigationFlow> {
-  int _currentStep = 0; // 0: Idiomas, 1: Introdução Gráfica, 2: Terminal
-  String _selectedLang = 'pt';
-
-  void _onLanguageSelected(String langCode) {
-    setState(() {
-      _selectedLang = langCode;
-      _currentStep = 1;
-    });
-  }
-
-  void _onStartStudio() {
-    setState(() {
-      _currentStep = 2;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_currentStep == 0) {
-      return LanguageSelectScreen(onSelect: _onLanguageSelected);
-    } else if (_currentStep == 1) {
-      return IntroGraphicalScreen(
-        langCode: _selectedLang,
-        onContinue: _onStartStudio,
-      );
-    } else {
-      return NavoaTerminalScreen(langCode: _selectedLang);
-    }
-  }
-}
-
+// 1. ECRÃ DE SELEÇÃO DE IDIOMA (6 Idiomas)
 class LanguageSelectScreen extends StatelessWidget {
-  final Function(String) onSelect;
-  const LanguageSelectScreen({super.key, required this.onSelect});
+  const LanguageSelectScreen({super.key});
 
-  static final List<Map<String, String>> languages = [
-    {'code': 'pt', 'label': 'Português', 'flag': '🇵🇹'},
-    {'code': 'en', 'label': 'English', 'flag': '🇬🇧'},
-    {'code': 'es', 'label': 'Español', 'flag': '🇪🇸'},
-    {'code': 'fr', 'label': 'Français', 'flag': '🇫🇷'},
-    {'code': 'it', 'label': 'Italiano', 'flag': '🇮🇹'},
-    {'code': 'de', 'label': 'Deutsch', 'flag': '🇩🇪'},
+  final List<Map<String, String>> languages = const [
+    {'name': 'Português', 'code': 'pt'},
+    {'name': 'English', 'code': 'en'},
+    {'name': 'Español', 'code': 'es'},
+    {'name': 'Français', 'code': 'fr'},
+    {'name': 'Italiano', 'code': 'it'},
+    {'name': 'Deutsch', 'code': 'de'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Icon(Icons.terminal, size: 64, color: Color(0xFFFFB000)),
-                const SizedBox(height: 16),
-                const Text(
-                  'NAVOA OS',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFFB000),
-                    fontFamily: 'monospace',
-                    letterSpacing: 2,
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'NAVOA OS',
+                style: TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 3,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'SELECIONE O IDIOMA / SELECT LANGUAGE',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'monospace'),
-                ),
-                const SizedBox(height: 24),
-                for (var lang in languages) ...[
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFFFB000),
-                      side: const BorderSide(color: Color(0xFFFFB000), width: 1.5),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    onPressed: () => onSelect(lang['code']!),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(lang['flag']!, style: const TextStyle(fontSize: 20)),
-                        const SizedBox(width: 12),
-                        Text(
-                          lang['label']!,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class IntroGraphicalScreen extends StatelessWidget {
-  final String langCode;
-  final VoidCallback onContinue;
-
-  const IntroGraphicalScreen({super.key, required this.langCode, required this.onContinue});
-
-  static const Map<String, Map<String, String>> texts = {
-    'pt': {
-      'title': '⚡ NAVOA OS // INTRODUÇÃO',
-      'sub': 'SISTEMA OPERACIONAL DE INVESTIGAÇÃO',
-      'body': 'Bem-vindo ao ambiente Navoa.\n\n• Linguagem nativa multilíngue (PT, EN, ES, FR, IT, DE)\n• Execução de código e variáveis em tempo real\n• Motor de alta performance em Rust\n\nComandos suportados em Português:\n> escrever("mensagem") ou imprimir("mensagem")\n> variavel = valor\n> inspecionar quarto',
-      'btn': 'INICIAR TERMINAL CRT',
-    },
-    'en': {
-      'title': '⚡ NAVOA OS // INTRODUCTION',
-      'sub': 'INVESTIGATION OPERATING SYSTEM',
-      'body': 'Welcome to the Navoa environment.\n\n• Multilingual native language support\n• Real-time code execution\n• High-performance Rust engine\n\nCommands supported:\n> print("message")\n> variable = value\n> inspect room',
-      'btn': 'START CRT TERMINAL',
-    },
-    'es': {
-      'title': '⚡ NAVOA OS // INTRODUCCIÓN',
-      'sub': 'SISTEMA OPERATIVO DE INVESTIGACIÓN',
-      'body': 'Bienvenido al entorno Navoa.\n\n• Soporte multilingüe nativo\n• Ejecución de código en tiempo real\n• Motor de alto rendimiento en Rust\n\nComandos soportados:\n> escribir("mensaje")\n> variable = valor\n> inspeccionar habitacion',
-      'btn': 'INICIAR TERMINAL CRT',
-    },
-    'fr': {
-      'title': '⚡ NAVOA OS // INTRODUCTION',
-      'sub': 'SYSTÈME D\'EXPLOITATION D\'ENQUÊTE',
-      'body': 'Bienvenue dans l\'environnement Navoa.\n\n• Support multilingue natif\n• Exécution de code en temps réel\n• Moteur haute performance en Rust\n\nCommandes supportées:\n> ecrire("message")\n> variable = valeur\n> inspecter chambre',
-      'btn': 'DÉMARRER TERMINAL CRT',
-    },
-    'it': {
-      'title': '⚡ NAVOA OS // INTRODUZIONE',
-      'sub': 'SISTEMA OPERATIVO DI INDAGINE',
-      'body': 'Benvenuto nell\'ambiente Navoa.\n\n• Supporto multilingue nativo\n• Esecuzione codice in tempo reale\n• Motore ad alte prestazioni in Rust\n\nComandi supportati:\n> scrivere("messaggio")\n> variabile = valore\n> ispeziona stanza',
-      'btn': 'AVVIA TERMINALE CRT',
-    },
-    'de': {
-      'title': '⚡ NAVOA OS // EINFÜHRUNG',
-      'sub': 'ERMITTLUNGSBETRIEBSSYSTEM',
-      'body': 'Willkommen in der Navoa-Umgebung.\n\n• Mehrsprachige Unterstützung\n• Echtzeit-Codeausführung\n• Hochleistungs-Engine in Rust\n\nUnterstützte Befehle:\n> schreiben("Nachricht")\n> variable = wert\n> raum untersuchen',
-      'btn': 'CRT TERMINAL STARTEN',
-    },
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final langText = texts[langCode] ?? texts['pt']!;
-
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 420),
-              decoration: BoxDecoration(
-                color: const Color(0xFF12110C),
-                border: Border.all(color: const Color(0xFFFFB000), width: 2),
-                borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    langText['title']!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFFB000),
-                      fontFamily: 'monospace',
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    langText['sub']!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey, fontSize: 11, fontFamily: 'monospace'),
-                  ),
-                  const Divider(color: Color(0xFFFFB000), height: 24, thickness: 1),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0x88FFB000)),
-                    ),
-                    child: Text(
-                      langText['body']!,
-                      style: const TextStyle(
-                        color: Color(0xFFFFB000),
-                        fontFamily: 'monospace',
-                        fontSize: 13,
-                        height: 1.5,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFB000),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    onPressed: onContinue,
-                    child: Text(
-                      langText['btn']!,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'monospace',
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 10),
+              const Text(
+                'SELECIONE O IDIOMA / SELECT LANGUAGE',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class NavoaTerminalScreen extends StatefulWidget {
-  final String langCode;
-  const NavoaTerminalScreen({super.key, required this.langCode});
-
-  @override
-  State<NavoaTerminalScreen> createState() => _NavoaTerminalScreenState();
-}
-
-class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
-  final TextEditingController _controller = TextEditingController();
-  final List<String> _history = [
-    '> SISTEMA OPERACIONAL NAVOA // TERMINAL CRT',
-    '> Suporte a comandos nativos ativo.',
-    '> Digita \'inspecionar quarto\' ou \'escrever("olá")\' para testar.'
-  ];
-  final Map<String, String> _variables = {};
-
-  void _executeCommand() {
-    final cmd = _controller.text.trim();
-    if (cmd.isEmpty) return;
-
-    setState(() {
-      _history.add('> $cmd');
-      _controller.clear();
-
-      final lowerCmd = cmd.toLowerCase();
-
-      if ((lowerCmd.startsWith('escrever(') ||
-          lowerCmd.startsWith('imprimir(') ||
-          lowerCmd.startsWith('println(') ||
-          lowerCmd.startsWith('print(') ||
-          lowerCmd.startsWith('ecrire(') ||
-          lowerCmd.startsWith('scrivere(') ||
-          lowerCmd.startsWith('schreiben(')) && cmd.endsWith(')')) {
-        final content = cmd.substring(cmd.indexOf('(') + 1, cmd.lastIndexOf(')')).replaceAll('"', '').replaceAll("'", '');
-        if (_variables.containsKey(content)) {
-          _history.add('📣 ${_variables[content]}');
-        } else {
-          _history.add('📣 $content');
-        }
-      } 
-      else if (lowerCmd.startsWith('inspecionar ') || lowerCmd.startsWith('inspect ') || lowerCmd.startsWith('ispeziona ') || lowerCmd.startsWith('inspecter ')) {
-        final spaceIdx = cmd.indexOf(' ');
-        final target = cmd.substring(spaceIdx + 1).trim();
-        if (target.toLowerCase() == 'quarto' || target.toLowerCase() == 'room' || target.toLowerCase() == 'chambre') {
-          _history.add('🔍 PISTA: O quadro elétrico precisa de energia. Cria a variável \'energia=100\'.');
-        } else {
-          _history.add('🔍 PISTA: Nada de especial encontrado em \'$target\'.');
-        }
-      } 
-      else if (cmd.contains('=')) {
-        final parts = cmd.split('=');
-        final varName = parts[0].trim();
-        final varVal = parts[1].trim();
-        _variables[varName] = varVal;
-        _history.add('📦 Variável \'$varName\' definida como $varVal!');
-        if (varName.toLowerCase() == 'energia' && varVal == '100') {
-          _history.add('💡 A energia flui. Os sistemas do quarto ligaram-se.');
-        }
-      } 
-      else {
-        _history.add('❓ Comando não reconhecido. Tenta \'escrever("texto")\', \'inspecionar quarto\' ou \'variavel=valor\'.');
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Navoa OS - Retro Noir', style: TextStyle(fontFamily: 'monospace', fontSize: 16)),
-        backgroundColor: const Color(0xFF181610),
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFFB000), width: 1.5),
-                ),
+              const SizedBox(height: 40),
+              SizedBox(
+                width: 300,
                 child: ListView.builder(
-                  itemCount: _history.length,
+                  shrinkWrap: true,
+                  itemCount: languages.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 6.0),
-                      child: Text(
-                        _history[index],
-                        style: const TextStyle(
-                          color: Color(0xFFFFB000),
-                          fontFamily: 'monospace',
-                          fontSize: 14,
-                          height: 1.4,
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.greenAccent),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => IntroScreen(lang: languages[index]['code']!),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          languages[index]['name']!,
+                          style: const TextStyle(color: Colors.greenAccent, fontSize: 16),
                         ),
                       ),
                     );
                   },
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.horizontal(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF151410),
-                      border: Border.all(color: const Color(0xFFFFB000)),
-                      borderRadius: BorderRadius.circular(6),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 2. ECRÃ DE INTRODUÇÃO COM OPÇÃO DE SALTAR
+class IntroScreen extends StatelessWidget {
+  final String lang;
+  const IntroScreen({super.key, required this.lang});
+
+  String getIntroText() {
+    switch (lang) {
+      case 'en':
+        return 'System booting...\n\nWelcome to Navoa OS.\nA retro noir ecosystem where every chapter teaches you to code a complete investigative script.\n\nType multi-line commands to solve the mystery.';
+      case 'es':
+        return 'Iniciando sistema...\n\nBienvenido a Navoa OS.\nUn ecosistema retro noir donde cada capítulo te enseña a programar un script de investigación completo.';
+      case 'fr':
+        return 'Démarrage du système...\n\nBienvenue sur Navoa OS.\nUn écosystème rétro noir interactif.';
+      case 'it':
+        return 'Avvio del sistema...\n\nBenvenuto in Navoa OS.\nUn ecosistema retro noir investigativo.';
+      case 'de':
+        return 'Systemstart...\n\nWillkommen bei Navoa OS.\nEin interaktives Retro-Noir-Ökosystem.';
+      default:
+        return 'A iniciar sistema...\n\nBem-vindo ao Navoa OS.\nUm ecossistema retro noir sobre o Tejo onde cada capítulo guia o utilizador através de múltiplos comandos para criar um programa elaborado.';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    '// INTRODUÇÃO',
+                    style: TextStyle(color: Colors.greenAccent, letterSpacing: 2),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      side: const BorderSide(color: Colors.greenAccent, width: 0.5),
                     ),
-                    child: TextField(
-                      controller: _controller,
-                      style: const TextStyle(color: Color(0xFFFFB000), fontFamily: 'monospace'),
-                      decoration: const InputDecoration(
-                        hintText: 'digita um comando...',
-                        hintStyle: TextStyle(color: Colors.grey, fontFamily: 'monospace'),
-                        border: InputBorder.none,
-                      ),
-                      onSubmitted: (_) => _executeCommand(),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TerminalScreen()),
+                      );
+                    },
+                    child: const Text(
+                      'SALTAR >>',
+                      style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
                     ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                getIntroText(),
+                style: const TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 16,
+                  height: 1.5,
+                  fontFamily: 'monospace',
+                ),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TerminalScreen()),
+                    );
+                  },
+                  child: const Text(
+                    'INICIAR TERMINAL',
+                    style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFB000),
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 3. TERMINAL CRT COM CAPÍTULOS GUIADOS E MULTI-COMANDOS
+class TerminalScreen extends StatefulWidget {
+  const TerminalScreen({super.key});
+
+  @override
+  State<TerminalScreen> createState() => _TerminalScreenState();
+}
+
+class _TerminalScreenState extends State<TerminalScreen> {
+  final TextEditingController _controller = TextEditingController();
+  
+  // Estado do tutorial/capítulos
+  int currentChapter = 1;
+  int stepInChapter = 0;
+  bool chapterCompleted = false;
+
+  final List<String> _history = [
+    'Navoa OS [Versão 1.0.0 - Módulo Investigativo]',
+    '=== CAPÍTULO 1: O Nevoeiro sobre o Tejo ===',
+    'Objectivo: Iniciar o sistema de escuta, declarar a pista principal e compilar o relatório.',
+    'Comando necessário 1: escrever [alvo: cais_do_sodre]',
+    'Digite o primeiro comando:\n'
+  ];
+
+  void _handleCommand(String input) {
+    setState(() {
+      _history.add('> $input');
+      String cmd = input.trim().toLowerCase();
+
+      if (cmd == 'ajuda' || cmd == 'help') {
+        _history.add('Comandos globais: \n - progresso: Mostra o estado do capítulo atual\n - reiniciar: Reinicia o capítulo\n - limpar: Limpa o ecrã\n - sair: Volta ao menu de idiomas');
+        return;
+      }
+
+      if (cmd == 'limpar') {
+        _history.clear();
+        return;
+      }
+
+      if (cmd == 'sair') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LanguageSelectScreen()),
+        );
+        return;
+      }
+
+      if (cmd == 'progresso') {
+        _history.add('Capítulo $currentChapter | Passo atual: ${stepInChapter + 1}/3');
+        return;
+      }
+
+      if (cmd == 'reiniciar') {
+        stepInChapter = 0;
+        _history.add('Capítulo reiniciado. Siga os passos indicados.');
+        return;
+      }
+
+      // LÓGICA DOS CAPÍTULOS COM MULTI-COMANDOS PROGRESSIVOS
+      if (currentChapter == 1) {
+        if (stepInChapter == 0) {
+          if (cmd.startsWith('escrever ')) {
+            _history.add('[OK] Alvo registado com sucesso.');
+            _history.add('Comando necessário 2: definir sombraco (ex: definir sombraco: vicente)');
+            stepInChapter++;
+          } else {
+            _history.add('[Erro] Use o comando: escrever [alvo: cais_do_sodre]');
+          }
+        } else if (stepInChapter == 1) {
+          if (cmd.startsWith('definir sombraco ')) {
+            _history.add('[OK] Detetive atribuído.');
+            _history.add('Comando necessário 3: compilar_caso');
+            stepInChapter++;
+          } else {
+            _history.add('[Erro] Use o comando: definir sombraco [nome]');
+          }
+        } else if (stepInChapter == 2) {
+          if (cmd == 'compilar_caso') {
+            _history.add('\n*** PROGRAMA CONCLUÍDO COM SUCESSO! ***');
+            _history.add('Script gerado: Investigação Cais do Sodre (Atribuído a Vicente).');
+            _history.add('-> Pressione Enter ou digite "proximo" para avançar ao Capítulo 2.\n');
+            chapterCompleted = true;
+            stepInChapter = 0;
+          } else {
+            _history.add('[Erro] Finalize o programa escrevendo: compilar_caso');
+          }
+        } else if (chapterCompleted && (cmd == 'proximo' || cmd == '')) {
+          currentChapter = 2;
+          chapterCompleted = false;
+          _history.add('=== CAPÍTULO 2: Sombras na Madragoa ===');
+          _history.add('Objectivo: Iniciar rastreio nocturno.');
+          _history.add('Comando necessário 1: varrer [zona: madragoa]');
+        }
+      } else if (currentChapter == 2) {
+        if (stepInChapter == 0) {
+          if (cmd.startsWith('varrer ')) {
+            _history.add('[OK] Zona escaneada.');
+            _history.add('Comando necessário 2: escutar [frequencia: 104.2]');
+            stepInChapter++;
+          } else {
+            _history.add('[Erro] Use o comando: varrer [zona: madragoa]');
+          }
+        } else if (stepInChapter == 1) {
+          if (cmd.startsWith('escutar ')) {
+            _history.add('[OK] Frequência sintonizada. Apanhou-se uma escuta suspeita.');
+            _history.add('Comando necessário 3: gerar_relatorio_final');
+            stepInChapter++;
+          } else {
+            _history.add('[Erro] Use o comando: escutar [frequencia: 104.2]');
+          }
+        } else if (stepInChapter == 2) {
+          if (cmd == 'gerar_relatorio_final') {
+            _history.add('\n*** PARABÉNS! PROGRAMA FINAL ELABORADO! ***');
+            _history.add('Criaste com sucesso um script completo de investigação noir no Navoa!');
+            _history.add('O caso está encerrado.\n');
+          } else {
+            _history.add('[Erro] Conclua o programa com: gerar_relatorio_final');
+          }
+        }
+      }
+    });
+    _controller.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text('NAVOA TERMINAL (CAP. $currentChapter)', style: const TextStyle(color: Colors.greenAccent, fontSize: 14, letterSpacing: 2)),
+        iconTheme: const IconThemeData(color: Colors.greenAccent),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: _history.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      _history[index],
+                      style: const TextStyle(color: Colors.greenAccent, fontFamily: 'monospace', fontSize: 14),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const Divider(color: Colors.greenAccent),
+            Row(
+              children: [
+                const Text('> ', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: const TextStyle(color: Colors.greenAccent, fontFamily: 'monospace'),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'digite o comando do capítulo...',
+                      hintStyle: TextStyle(color: Colors.green300),
+                    ),
+                    onSubmitted: _handleCommand,
                   ),
-                  onPressed: _executeCommand,
-                  child: const Text('EXECUTAR', style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace')),
                 ),
               ],
             ),
@@ -411,4 +367,3 @@ class _NavoaTerminalScreenState extends State<NavoaTerminalScreen> {
     );
   }
 }
-// Build forced at Sat Sep 26 16:48:30 WEST 2026
