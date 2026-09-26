@@ -1,8 +1,11 @@
-name: Build Android APK
+name: Build & Release Android APK
 
 on:
   push:
     branches: [ main, master ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -30,9 +33,12 @@ jobs:
 
       - run: flutter pub get
       - run: flutter build apk --release
-      
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+
+      - name: Publicar Release com APK direto
+        uses: ncipollo/release-action@v1
         with:
-          name: navoa-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
+          tag: "v1.0.${{ github.run_number }}"
+          name: "Navoa Build #${{ github.run_number }}"
+          body: "Instalador APK direto gerado automaticamente."
+          token: ${{ secrets.GITHUB_TOKEN }}
