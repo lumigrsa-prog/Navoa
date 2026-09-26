@@ -68,7 +68,7 @@ class LanguageSelectScreen extends StatelessWidget {
   final Function(String) onSelect;
   const LanguageSelectScreen({super.key, required this.onSelect});
 
-  static const List<Map<String, String>> languages = [
+  static final List<Map<String, String>> languages = [
     {'code': 'pt', 'label': 'Português', 'flag': '🇵🇹'},
     {'code': 'en', 'label': 'English', 'flag': '🇬🇧'},
     {'code': 'es', 'label': 'Español', 'flag': '🇪🇸'},
@@ -84,7 +84,7 @@ class LanguageSelectScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(24),
-            maxWidth: 400,
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,30 +108,28 @@ class LanguageSelectScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.grey, fontSize: 13),
                 ),
                 const SizedBox(height: 24),
-                ...languages.map((lang) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFFFB000),
-                        side: const BorderSide(color: Color(0xFFFFB000)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: () => onSelect(lang['code']!),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(lang['flag']!, style: const TextStyle(fontSize: 18)),
-                          const SizedBox(width: 10),
-                          Text(
-                            lang['label']!,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
+                for (var lang in languages) ...[
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFFFB000),
+                      side: const BorderSide(color: Color(0xFFFFB000)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                  );
-                }),
+                    onPressed: () => onSelect(lang['code']!),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(lang['flag']!, style: const TextStyle(fontSize: 18)),
+                        const SizedBox(width: 10),
+                        Text(
+                          lang['label']!,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
               ],
             ),
           ),
