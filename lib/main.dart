@@ -21,7 +21,6 @@ class NavoaApp extends StatelessWidget {
   }
 }
 
-// 1. ECRÃ DE SELEÇÃO DE IDIOMA (6 Idiomas)
 class LanguageSelectScreen extends StatelessWidget {
   const LanguageSelectScreen({super.key});
 
@@ -97,27 +96,9 @@ class LanguageSelectScreen extends StatelessWidget {
   }
 }
 
-// 2. ECRÃ DE INTRODUÇÃO COM OPÇÃO DE SALTAR
 class IntroScreen extends StatelessWidget {
   final String lang;
   const IntroScreen({super.key, required this.lang});
-
-  String getIntroText() {
-    switch (lang) {
-      case 'en':
-        return 'System booting...\n\nWelcome to Navoa OS.\nA retro noir ecosystem where every chapter teaches you to code a complete investigative script.\n\nType multi-line commands to solve the mystery.';
-      case 'es':
-        return 'Iniciando sistema...\n\nBienvenido a Navoa OS.\nUn ecosistema retro noir donde cada capítulo te enseña a programar un script de investigación completo.';
-      case 'fr':
-        return 'Démarrage du système...\n\nBienvenue sur Navoa OS.\nUn écosystème rétro noir interactif.';
-      case 'it':
-        return 'Avvio del sistema...\n\nBenvenuto in Navoa OS.\nUn ecosistema retro noir investigativo.';
-      case 'de':
-        return 'Systemstart...\n\nWillkommen bei Navoa OS.\nEin interaktives Retro-Noir-Ökosystem.';
-      default:
-        return 'A iniciar sistema...\n\nBem-vindo ao Navoa OS.\nUm ecossistema retro noir sobre o Tejo onde cada capítulo guia o utilizador através de múltiplos comandos para criar um programa elaborado.';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,9 +135,9 @@ class IntroScreen extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              Text(
-                getIntroText(),
-                style: const TextStyle(
+              const Text(
+                'A iniciar sistema...\n\nBem-vindo ao Navoa OS.\nUm ecossistema retro noir sobre o Tejo onde cada capítulo guia o utilizador através de múltiplos comandos para criar um programa elaborado.',
+                style: TextStyle(
                   color: Colors.greenAccent,
                   fontSize: 16,
                   height: 1.5,
@@ -192,7 +173,6 @@ class IntroScreen extends StatelessWidget {
   }
 }
 
-// 3. TERMINAL CRT COM CAPÍTULOS GUIADOS E MULTI-COMANDOS
 class TerminalScreen extends StatefulWidget {
   const TerminalScreen({super.key});
 
@@ -202,8 +182,6 @@ class TerminalScreen extends StatefulWidget {
 
 class _TerminalScreenState extends State<TerminalScreen> {
   final TextEditingController _controller = TextEditingController();
-  
-  // Estado do tutorial/capítulos
   int currentChapter = 1;
   int stepInChapter = 0;
   bool chapterCompleted = false;
@@ -221,16 +199,14 @@ class _TerminalScreenState extends State<TerminalScreen> {
       _history.add('> $input');
       String cmd = input.trim().toLowerCase();
 
-      if (cmd == 'ajuda' || cmd == 'help') {
-        _history.add('Comandos globais: \n - progresso: Mostra o estado do capítulo atual\n - reiniciar: Reinicia o capítulo\n - limpar: Limpa o ecrã\n - sair: Volta ao menu de idiomas');
+      if (cmd == 'ajuda') {
+        _history.add('Comandos: progresso, reiniciar, limpar, sair');
         return;
       }
-
       if (cmd == 'limpar') {
         _history.clear();
         return;
       }
-
       if (cmd == 'sair') {
         Navigator.pushReplacement(
           context,
@@ -239,77 +215,23 @@ class _TerminalScreenState extends State<TerminalScreen> {
         return;
       }
 
-      if (cmd == 'progresso') {
-        _history.add('Capítulo $currentChapter | Passo atual: ${stepInChapter + 1}/3');
-        return;
-      }
-
-      if (cmd == 'reiniciar') {
-        stepInChapter = 0;
-        _history.add('Capítulo reiniciado. Siga os passos indicados.');
-        return;
-      }
-
-      // LÓGICA DOS CAPÍTULOS COM MULTI-COMANDOS PROGRESSIVOS
       if (currentChapter == 1) {
-        if (stepInChapter == 0) {
-          if (cmd.startsWith('escrever ')) {
-            _history.add('[OK] Alvo registado com sucesso.');
-            _history.add('Comando necessário 2: definir sombraco (ex: definir sombraco: vicente)');
-            stepInChapter++;
-          } else {
-            _history.add('[Erro] Use o comando: escrever [alvo: cais_do_sodre]');
-          }
-        } else if (stepInChapter == 1) {
-          if (cmd.startsWith('definir sombraco ')) {
-            _history.add('[OK] Detetive atribuído.');
-            _history.add('Comando necessário 3: compilar_caso');
-            stepInChapter++;
-          } else {
-            _history.add('[Erro] Use o comando: definir sombraco [nome]');
-          }
-        } else if (stepInChapter == 2) {
-          if (cmd == 'compilar_caso') {
-            _history.add('\n*** PROGRAMA CONCLUÍDO COM SUCESSO! ***');
-            _history.add('Script gerado: Investigação Cais do Sodre (Atribuído a Vicente).');
-            _history.add('-> Pressione Enter ou digite "proximo" para avançar ao Capítulo 2.\n');
-            chapterCompleted = true;
-            stepInChapter = 0;
-          } else {
-            _history.add('[Erro] Finalize o programa escrevendo: compilar_caso');
-          }
-        } else if (chapterCompleted && (cmd == 'proximo' || cmd == '')) {
+        if (stepInChapter == 0 && cmd.startsWith('escrever ')) {
+          _history.add('[OK] Alvo registado. Comando 2: definir sombraco vicente');
+          stepInChapter++;
+        } else if (stepInChapter == 1 && cmd.startsWith('definir sombraco ')) {
+          _history.add('[OK] Detetive atribuído. Comando 3: compilar_caso');
+          stepInChapter++;
+        } else if (stepInChapter == 2 && cmd == 'compilar_caso') {
+          _history.add('\n*** CAPÍTULO 1 CONCLUÍDO! Digite "proximo" para avançar. ***\n');
+          chapterCompleted = true;
+          stepInChapter = 0;
+        } else if (chapterCompleted && cmd == 'proximo') {
           currentChapter = 2;
           chapterCompleted = false;
-          _history.add('=== CAPÍTULO 2: Sombras na Madragoa ===');
-          _history.add('Objectivo: Iniciar rastreio nocturno.');
-          _history.add('Comando necessário 1: varrer [zona: madragoa]');
-        }
-      } else if (currentChapter == 2) {
-        if (stepInChapter == 0) {
-          if (cmd.startsWith('varrer ')) {
-            _history.add('[OK] Zona escaneada.');
-            _history.add('Comando necessário 2: escutar [frequencia: 104.2]');
-            stepInChapter++;
-          } else {
-            _history.add('[Erro] Use o comando: varrer [zona: madragoa]');
-          }
-        } else if (stepInChapter == 1) {
-          if (cmd.startsWith('escutar ')) {
-            _history.add('[OK] Frequência sintonizada. Apanhou-se uma escuta suspeita.');
-            _history.add('Comando necessário 3: gerar_relatorio_final');
-            stepInChapter++;
-          } else {
-            _history.add('[Erro] Use o comando: escutar [frequencia: 104.2]');
-          }
-        } else if (stepInChapter == 2) {
-          if (cmd == 'gerar_relatorio_final') {
-            _history.add('\n*** PARABÉNS! PROGRAMA FINAL ELABORADO! ***');
-            _history.add('Criaste com sucesso um script completo de investigação noir no Navoa!');
-            _history.add('O caso está encerrado.\n');
-          } else {
-            _history.add('[Erro] Conclua o programa com: gerar_relatorio_final');
-          }
+          _history.add('=== CAPÍTULO 2: Sombras na Madragoa ===\nComando necessário 1: varrer madragoa');
+        } else {
+          _history.add('[Erro] Comando inválido para este passo. Digite "ajuda".');
         }
       }
     });
@@ -318,12 +240,13 @@ class _TerminalScreenState extends State<TerminalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const green = Colors.greenAccent;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text('NAVOA TERMINAL (CAP. $currentChapter)', style: const TextStyle(color: Colors.greenAccent, fontSize: 14, letterSpacing: 2)),
-        iconTheme: const IconThemeData(color: Colors.greenAccent),
+        title: Text('NAVOA (CAP. $currentChapter)', style: const TextStyle(color: green, fontSize: 14)),
+        iconTheme: const IconThemeData(color: green),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -335,27 +258,20 @@ class _TerminalScreenState extends State<TerminalScreen> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      _history[index],
-                      style: const TextStyle(color: Colors.greenAccent, fontFamily: 'monospace', fontSize: 14),
-                    ),
+                    child: Text(_history[index], style: const TextStyle(color: green, fontFamily: 'monospace', fontSize: 14)),
                   );
                 },
               ),
             ),
-            const Divider(color: Colors.greenAccent),
+            const Divider(color: green),
             Row(
               children: [
-                const Text('> ', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold)),
+                const Text('> ', style: TextStyle(color: green, fontWeight: FontWeight.bold)),
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    style: const TextStyle(color: Colors.greenAccent, fontFamily: 'monospace'),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'digite o comando do capítulo...',
-                      hintStyle: TextStyle(color: Colors.green300),
-                    ),
+                    style: const TextStyle(color: green, fontFamily: 'monospace'),
+                    decoration: const InputDecoration(border: InputBorder.none, hintText: 'comando...'),
                     onSubmitted: _handleCommand,
                   ),
                 ),
