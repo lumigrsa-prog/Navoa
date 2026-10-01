@@ -1,7 +1,15 @@
 [workspace]
 members = [
-    "crates/navoa_core",
+    "crates/navoa_studio",
     "crates/navoa_cli",
-    "rust"
-, "crates/navoa_server"]
+    "crates/navoa_core",
+    "crates/navoa_lexer",
+    "crates/navoa_parser",
+    "crates/navoa_analyzer",
+    "crates/navoa_codegen",
+    "crates/navoa_bytecode",
+    "crates/navoa_vir",
+    "crates/navoa_vm",
+    "crates/navoa_server"
+]
 resolver = "2"
